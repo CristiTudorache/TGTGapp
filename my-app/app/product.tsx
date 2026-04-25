@@ -1,79 +1,99 @@
-import React from "react";
-import { View, Text, Pressable, Image, ScrollView } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
-import { useApp } from "../context/AppContext";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { View, Text, Image, Pressable, ScrollView } from "react-native";
+import BackButton from "../components/BackButton";
 
 export default function Product() {
   const router = useRouter();
   const { item } = useLocalSearchParams();
-  const { factura } = useApp();
 
-  const parsedItem = item ? JSON.parse(item as string) : null;
-
-  const formatTime = (hour: number) => {
-    const suffix = hour >= 12 ? "PM" : "AM";
-    const formatted = hour % 12 === 0 ? 12 : hour % 12;
-    return `${formatted}${suffix}`;
-  };
-
-  const now = new Date();
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  const end = parsedItem?.pickupEnd ? parsedItem.pickupEnd * 60 : null;
-  const isClosed = end !== null ? currentMinutes >= end : false;
-
-  if (!parsedItem) return null;
+  const parsedItem = JSON.parse(item as string);
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: "#0f172a" }}>
-      <Image source={{ uri: parsedItem.image }} style={{ width: "100%", height: 220 }} />
+    <ScrollView
+      style={{ flex: 1, backgroundColor: "#0f172a" }}
+      contentContainerStyle={{
+        padding: 16,
+        paddingTop: 40,
+        paddingBottom: 40,
+      }}
+    >
+      {/* BACK */}
+      <BackButton />
 
-      <View style={{ padding: 16 }}>
-        <Text style={{ color: "white", fontSize: 22, fontWeight: "bold" }}>
-          {parsedItem.title}
+      {/* IMAGE */}
+      <Image
+        source={{ uri: parsedItem.image }}
+        style={{
+          width: "100%",
+          height: 200,
+          borderRadius: 12,
+          marginBottom: 16,
+        }}
+      />
+
+      {/* TITLE */}
+      <Text style={{ color: "white", fontSize: 22, marginBottom: 6 }}>
+        {parsedItem.title}
+      </Text>
+
+      {/* PRICE */}
+      <Text style={{ color: "#22c55e", fontSize: 18, marginBottom: 10 }}>
+        {parsedItem.price} RON
+      </Text>
+
+      {/* DESCRIPTION */}
+      <Text style={{ color: "#94a3b8", marginBottom: 20 }}>
+        {parsedItem.description}
+      </Text>
+
+      {/* ================= BUY BUTTON ================= */}
+      <Pressable
+        onPress={() =>
+          router.push({
+            pathname: "/facturi",
+            params: { item: JSON.stringify(parsedItem) },
+          })
+        }
+        style={{
+          backgroundColor: "#22c55e",
+          padding: 16,
+          borderRadius: 12,
+          marginBottom: 10,
+        }}
+      >
+        <Text style={{ color: "white", textAlign: "center", fontWeight: "bold" }}>
+          Cumpără acum
         </Text>
+      </Pressable>
 
-        <Text style={{ color: "#22c55e", fontSize: 18, marginTop: 10 }}>
-          {parsedItem.price}
-        </Text>
-
-        <Text style={{ color: "#94a3b8", marginTop: 10 }}>
-          📅 {formatTime(parsedItem.pickupStart)} - {formatTime(parsedItem.pickupEnd)}
-        </Text>
-
-        <Text style={{ color: isClosed ? "#ef4444" : "#22c55e", marginTop: 6 }}>
-          {isClosed ? "Închis" : "Deschis"}
-        </Text>
-      </View>
-
-      <View style={{ padding: 16 }}>
-        <Pressable
-          disabled={isClosed}
-          onPress={() => {
-            if (isClosed) return;
-
-            if (!factura) {
-              router.push({
-                pathname: "/facturi",
-                params: { item: JSON.stringify(parsedItem) },
-              });
-            } else {
-              router.push({
-                pathname: "/checkout",
-                params: { item: JSON.stringify(parsedItem) },
-              });
-            }
-          }}
+      {/* ================= DONATE BUTTON ================= */}
+      <Pressable
+        onPress={() =>
+          router.push({
+            pathname: "/checkout",
+            params: {
+              item: JSON.stringify(parsedItem),
+              donation: "true", // 🔥 THIS IS THE KEY
+            },
+          })
+        }
+        style={{
+          borderWidth: 1,
+          borderColor: "#22c55e",
+          padding: 16,
+          borderRadius: 12,
+        }}
+      >
+        <Text
           style={{
-            backgroundColor: isClosed ? "#475569" : "#22c55e",
-            padding: 16,
-            borderRadius: 12,
+            color: "x#22c55e",
+            textAlign: "center",
+            fontWeight: "bold",
           }}
         >
-          <Text style={{ textAlign: "center", color: "white" }}>
-            {isClosed ? "Închis" : "Rezervă"}
-          </Text>
-        </Pressable>
-      </View>
+          ❤️ Donează o porție
+        </Text>
+      </Pressable>
     </ScrollView>
   );
 }

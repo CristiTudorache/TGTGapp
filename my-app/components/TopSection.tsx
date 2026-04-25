@@ -18,7 +18,6 @@ export default function TopSection() {
     minute: "2-digit",
   });
 
-  // ✅ CAPITALIZED DATE FIX
   const rawDate = time.toLocaleDateString("ro-RO", {
     weekday: "long",
     day: "numeric",
@@ -29,11 +28,23 @@ export default function TopSection() {
     rawDate.charAt(0).toUpperCase() + rawDate.slice(1);
 
   return (
-    <View style={{ marginBottom: 16 }}>
-      <Text style={{ color: "#94a3b8", marginBottom: 6 }}>
+    <View
+      style={{
+        marginTop: 10,          // ✅ THIS fixes "too high"
+        marginBottom: 16,
+      }}
+    >
+      {/* DATE + TIME */}
+      <Text
+        style={{
+          color: "#94a3b8",
+          marginBottom: 6,
+        }}
+      >
         {formattedDate} • {formattedTime}
       </Text>
 
+      {/* TITLE */}
       <Text
         style={{
           color: "white",
@@ -44,6 +55,7 @@ export default function TopSection() {
         FoodLink
       </Text>
 
+      {/* INFO CARD */}
       <View
         style={{
           marginTop: 10,

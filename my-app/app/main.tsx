@@ -19,6 +19,7 @@ import TopSection from "../components/TopSection";
 import ClubCard from "../components/ClubCard";
 import SponsoredCard from "../components/SponsoredCard";
 import PickupTime from "../components/PickupTime";
+import { SafeAreaView } from "react-native-safe-area-context";
 const products = [
   {
     id: "1",
@@ -138,8 +139,8 @@ const clubProducts = [
     title: "Sushi Premium",
     price: "29.99 RON",
     distance: "1.4 km",
-    pickupStart: 18,
-    pickupEnd: 22,
+    pickupStart: 19,
+    pickupEnd: 23,
     allergens: ["Fish"],
     image: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c",
   },
@@ -317,7 +318,7 @@ const markers = [
 
 export default function Main() {
   const params = useLocalSearchParams();
-const { orders } = useApp();
+const { orders, addOrder } = useApp();
   const [tab, setTab] = useState(
   (params.tab as string) || "home"
 );
@@ -332,6 +333,12 @@ useEffect(() => {
   const [viewMode, setViewMode] = useState("list");
   const [selectedStore, setSelectedStore] = useState<any>(null);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [previousTab, setPreviousTab] = useState("home");
+  
+const { factura } = useApp();
+const hasFactura = !!factura; // first time only
+const router = useRouter();
+const [showDonation, setShowDonation] = useState<string | null>(null);
   const [scrollY, setScrollY] = useState(0);
 const [scrollX, setScrollX] = useState(0);
 const [appTime, setAppTime] = useState(
@@ -350,8 +357,6 @@ useEffect(() => {
 
   return () => clearInterval(interval);
 }, []);
-
-const router = useRouter();
 
 const formatTime = (hour: number) => {
   const suffix = hour >= 12 ? "PM" : "AM";
@@ -409,10 +414,9 @@ const isClosed = end !== null && now >= end;
   return (
     <Pressable
       onPress={() => {
-  router.push({
-    pathname: "/product",
-    params: { item: JSON.stringify(item) },
-  });
+  setPreviousTab(tab);   // ✅ SAVE WHERE YOU CAME FROM
+  setSelectedProduct(item);
+  setTab("product");
 }}
     >
       <View
@@ -466,15 +470,21 @@ const isClosed = end !== null && now >= end;
         </View>
 
         <Pressable
-          onPress={(e) => {
-            e.stopPropagation();
-            toggleFavorite(item.id);
+          onPress={() => {
+  const itemString = JSON.stringify(selectedProduct);
 
-            if (selectedStore) {
-              setSelectedStore(null);
-              setTab("favorites");
-            }
-          }}
+  if (!hasFactura) {
+    router.push({
+      pathname: "/facturi",
+      params: { item: itemString },
+    });
+  } else {
+    router.push({
+      pathname: "/checkout",
+      params: { item: itemString },
+    });
+  }
+}}
         >
           <Text>
             {favorites.includes(item.id) ? "❤️" : "🤍"}
@@ -487,9 +497,12 @@ const isClosed = end !== null && now >= end;
 
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#0f172a" }}>
+    <SafeAreaView
+  style={{ flex: 1, backgroundColor: "#0f172a" }}
+  edges={["top", "bottom"]}
+>
      <ScrollView
-  style={{ padding: 16 }}
+  contentContainerStyle={{ padding: 16, paddingBottom: 120 }}
   showsVerticalScrollIndicator={false}
   onScroll={(e) => setScrollY(e.nativeEvent.contentOffset.y)}
   scrollEventThrottle={16}
@@ -622,7 +635,132 @@ const isClosed = end !== null && now >= end;
             ))}
           </>
         )}
+        {tab === "product" && selectedProduct && (
+  <>
+    {/* BACK BUTTON */}
+    <Pressable onPress={() => setTab(previousTab)}>
+      <Text style={{ color: "#22c55e", marginBottom: 10 }}>
+        ← Înapoi
+      </Text>
+    </Pressable>
 
+    {/* IMAGE */}
+    <Image
+      source={{ uri: selectedProduct.image }}
+      style={{
+        width: "100%",
+        height: 220,
+        borderRadius: 12,
+        marginBottom: 10,
+      }}
+    />
+
+    {/* INFO */}
+    <Text style={{ color: "white", fontSize: 20 }}>
+      {selectedProduct.title}
+    </Text>
+
+    <Text style={{ color: "#94a3b8", marginTop: 6 }}>
+      {selectedProduct.desc}
+    </Text>
+
+    <Text style={{ color: "#22c55e", marginTop: 6 }}>
+      {selectedProduct.price}
+    </Text>
+
+    <Text style={{ color: "#94a3b8", marginTop: 6 }}>
+      📍 {selectedProduct.distance}
+    </Text>
+
+    {/* ALLERGENS */}
+    {selectedProduct.allergens && (
+      <Text style={{ color: "#94a3b8", marginTop: 6 }}>
+        Alergeni: {selectedProduct.allergens.join(", ")}
+      </Text>
+    )}
+    <View style={{ marginTop: 20 }}>
+  <Pressable
+    onPress={() => {
+  const itemString = JSON.stringify(selectedProduct);
+
+  if (!hasFactura) {
+    router.push({
+      pathname: "/facturi",
+      params: { item: itemString },
+    });
+  } else {
+    router.push({
+      pathname: "/checkout",
+      params: { item: itemString },
+    });
+  }
+}}
+    style={{
+      backgroundColor: "#22c55e",
+      padding: 16,
+      borderRadius: 12,
+      alignItems: "center",
+    }}
+  >
+    <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>
+      Cumpără acum
+    </Text>
+  </Pressable>
+</View>
+
+{/* ================= DONATE BUTTON ================= */}
+<Pressable
+  onPress={() =>
+  setShowDonation(showDonation ? null : selectedProduct.id)
+}
+  style={{
+    borderWidth: 1,
+    borderColor: "#22c55e",
+    padding: 12,
+    borderRadius: 10,
+    marginTop: 10,
+  }}
+>
+  <Text style={{ color: "#22c55e", textAlign: "center", fontWeight: "bold" }}>
+    ❤️ Donează o porție
+  </Text>
+</Pressable>
+
+{/* ================= EXPAND ================= */}
+{showDonation === selectedProduct.id && (
+  <View
+    style={{
+      backgroundColor: "#1e293b",
+      padding: 12,
+      borderRadius: 10,
+      marginTop: 8,
+    }}
+  >
+    <Pressable
+      onPress={() =>
+        router.push({
+          pathname: "/checkout",
+          params: {
+            item: JSON.stringify(selectedProduct),
+            donation: "true",
+          },
+        })
+      }
+      style={{
+        backgroundColor: "#22c55e",
+        padding: 12,
+        borderRadius: 8,
+      }}
+    >
+      <Text style={{ color: "white", textAlign: "center", fontWeight: "bold" }}>
+        Plătește donația
+      </Text>
+    </Pressable>
+  </View>
+)}
+
+  </>
+)}
         {/* ✅ UPDATED FAVORITES */}
         {tab === "favorites" && (
           <>
@@ -759,7 +897,7 @@ const isClosed = end !== null && now >= end;
   style={{
     position: "absolute",
     right: 4,
-    top: 120,
+    top: 160,
     width: 5,
     height: 120,
     backgroundColor: "#334155",
@@ -824,6 +962,6 @@ const isClosed = end !== null && now >= end;
     </View>
   </View>
 </Modal>
-    </View>
-  );
+</SafeAreaView>
+);
 }

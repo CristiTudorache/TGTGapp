@@ -1,70 +1,148 @@
-import { View, Text, TextInput, Pressable } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  ScrollView,
+} from "react-native";
 import { useState } from "react";
 import { useApp } from "../context/AppContext";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import BackButton from "../components/BackButton";
+import { SafeAreaView } from "react-native-safe-area-context"; // ✅ ADD THIS
 
 export default function Facturi() {
+  const { factura, setFactura } = useApp();
   const router = useRouter();
   const { item } = useLocalSearchParams();
-  const { setFactura } = useApp();
 
-  const [street, setStreet] = useState("");
-  const [number, setNumber] = useState("");
-  const [city, setCity] = useState("");
-  const [county, setCounty] = useState("");
-  const [postal, setPostal] = useState("");
+  // ✅ SAFE DEFAULTS
+  const [name, setName] = useState<string>(factura?.name ?? "");
+  const [company, setCompany] = useState<string>(factura?.company ?? "");
+  const [cui, setCui] = useState<string>(factura?.cui ?? "");
+  const [address, setAddress] = useState<string>(factura?.address ?? "");
+  const [city, setCity] = useState<string>(factura?.city ?? "");
+  const [phone, setPhone] = useState<string>(factura?.phone ?? "");
+
+  const input = {
+    backgroundColor: "#334155",
+    color: "white",
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 10,
+  };
+
+  const handleSave = () => {
+    if (!name || !address || !city || !phone) {
+      alert("Completează câmpurile obligatorii");
+      return;
+    }
+
+    setFactura({
+      name,
+      company,
+      cui,
+      address,
+      city,
+      phone,
+    });
+
+    router.push({
+      pathname: "/checkout",
+      params: { item },
+    });
+  };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#0f172a", padding: 20 }}>
-      
-      <Pressable onPress={() => router.back()} style={{ marginBottom: 10 }}>
-        <Text style={{ color: "#22c55e" }}>← Înapoi</Text>
-      </Pressable>
-
-      <Text style={{ color: "white", fontSize: 20, marginBottom: 20 }}>
-        Informații pentru factură
-      </Text>
-
-      {[["Strada", street, setStreet],
-        ["Nr.", number, setNumber],
-        ["Localitate", city, setCity],
-        ["Județ", county, setCounty],
-        ["Cod poștal", postal, setPostal],
-      ].map(([label, val, setter]: any) => (
-        <TextInput
-          key={label}
-          placeholder={label}
-          placeholderTextColor="#64748b"
-          value={val}
-          onChangeText={setter}
-          style={{
-            backgroundColor: "#1e293b",
-            color: "white",
-            padding: 12,
-            borderRadius: 10,
-            marginBottom: 12,
-          }}
-        />
-      ))}
-
-      <Pressable
-        onPress={() => {
-          setFactura({ street, number, city, county, postal });
-          router.push({
-            pathname: "/checkout",
-            params: { item },
-          });
-        }}
-        style={{
-          backgroundColor: "#22c55e",
-          padding: 14,
-          borderRadius: 10,
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#0f172a" }}>
+      <ScrollView
+        contentContainerStyle={{
+          padding: 16,
+          paddingBottom: 40,
         }}
       >
-        <Text style={{ color: "white", textAlign: "center" }}>
-          Continuă către plată
+        {/* ✅ BACK BUTTON NOW SAFE */}
+        <BackButton />
+
+        <Text
+          style={{
+            color: "white",
+            fontSize: 22,
+            marginBottom: 20,
+          }}
+        >
+          Informații factură
         </Text>
-      </Pressable>
-    </View>
+
+        <TextInput
+          placeholder="Nume complet"
+          placeholderTextColor="#94a3b8"
+          style={input}
+          value={name}
+          onChangeText={setName}
+        />
+
+        <TextInput
+          placeholder="Firmă (opțional)"
+          placeholderTextColor="#94a3b8"
+          style={input}
+          value={company}
+          onChangeText={setCompany}
+        />
+
+        <TextInput
+          placeholder="CUI (opțional)"
+          placeholderTextColor="#94a3b8"
+          style={input}
+          value={cui}
+          onChangeText={setCui}
+        />
+
+        <TextInput
+          placeholder="Adresă"
+          placeholderTextColor="#94a3b8"
+          style={input}
+          value={address}
+          onChangeText={setAddress}
+        />
+
+        <TextInput
+          placeholder="Oraș"
+          placeholderTextColor="#94a3b8"
+          style={input}
+          value={city}
+          onChangeText={setCity}
+        />
+
+        <TextInput
+          placeholder="Telefon"
+          placeholderTextColor="#94a3b8"
+          style={input}
+          value={phone}
+          onChangeText={setPhone}
+          keyboardType="phone-pad"
+        />
+
+        <Pressable
+          onPress={handleSave}
+          style={{
+            backgroundColor: "#22c55e",
+            padding: 16,
+            borderRadius: 12,
+            marginTop: 20,
+          }}
+        >
+          <Text
+            style={{
+              color: "white",
+              textAlign: "center",
+              fontWeight: "bold",
+            }}
+          >
+            Continuă
+          </Text>
+        </Pressable>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
