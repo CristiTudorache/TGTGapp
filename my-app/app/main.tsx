@@ -927,22 +927,33 @@ const isClosed = end !== null && now >= end;
       <Modal visible={clubModal} transparent animationType="slide">
   <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.5)" }}>
     <View style={{ backgroundColor: "#1e293b", padding: 20 }}>
-      <Text style={{ color: "white", marginBottom: 10 }}>
-        Start free trial
-      </Text>
+      <Text style={{ color: "white", marginBottom: 10, fontSize: 16 }}>
+  FoodLink Club — 10 RON / lună
+</Text>
 
-      <Pressable
-        onPress={() => {
-          setClubActive(true);
-          setClubModal(false);
-          setTab("club");
-        }}
-        style={{ backgroundColor: "#22c55e", padding: 14, borderRadius: 10 }}
-      >
-        <Text style={{ color: "white", textAlign: "center" }}>
-          Activează
-        </Text>
-      </Pressable>
+<Text style={{ color: "#94a3b8", marginBottom: 16 }}>
+  Beneficii:
+  {"\n"}• Acces produse exclusive
+  {"\n"}• Economisești mai mult 💸
+</Text>
+
+<Pressable
+  onPress={() => {
+    // simulate payment success
+    setClubActive(true);
+    setClubModal(false);
+    setTab("club");
+  }}
+  style={{
+    backgroundColor: "#22c55e",
+    padding: 14,
+    borderRadius: 10,
+  }}
+>
+  <Text style={{ color: "white", textAlign: "center", fontWeight: "bold" }}>
+    Intră pentru 10 lei/lună →
+  </Text>
+</Pressable>
 
       {/* 👇 ADD THIS */}
       <Pressable

@@ -32,7 +32,9 @@ export default function ClubCard({ onPress }: any) {
           alignSelf: "flex-start",
         }}
       >
-        <Text style={{ color: "white" }}>Începe trial gratuit →</Text>
+        <Text style={{ color: "white" }}>
+          Intră pentru 10 lei/lună →
+        </Text>
       </View>
     </Pressable>
   );
