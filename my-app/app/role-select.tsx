@@ -25,6 +25,20 @@ const roles = [
 export default function RoleSelect() {
   const router = useRouter();
 
+  const handleSelect = (role: "consumer" | "producer" | "ngo") => {
+    if (role === "consumer") {
+      router.push("/onboarding");
+    }
+
+    if (role === "producer") {
+      router.push("/producer" as any); // placeholder screen
+    }
+
+    if (role === "ngo") {
+      router.push("/ngo" as any); // your NGO flow
+    }
+  };
+
   return (
     <View
       style={{
@@ -53,7 +67,7 @@ export default function RoleSelect() {
         {roles.map((r) => (
           <Pressable
             key={r.role}
-            onPress={() => router.push("onboarding" as any)}
+            onPress={() => handleSelect(r.role as any)}
             style={{
               flexDirection: "row",
               alignItems: "center",
@@ -79,9 +93,16 @@ export default function RoleSelect() {
             </View>
 
             <View style={{ flex: 1 }}>
-              <Text style={{ color: "white", fontWeight: "600", marginBottom: 4 }}>
+              <Text
+                style={{
+                  color: "white",
+                  fontWeight: "600",
+                  marginBottom: 4,
+                }}
+              >
                 {r.label}
               </Text>
+
               <Text style={{ color: "#94a3b8", fontSize: 12 }}>
                 {r.desc}
               </Text>

@@ -1,0 +1,503 @@
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  Pressable,
+  TextInput,
+  ScrollView,
+  Image,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useApp } from "../context/AppContext";
+import Toast from "../components/toast";
+
+/* ================= OFFERS ================= */
+
+const offers = [
+  {
+    id: "1",
+    title: "Pachet Fructe Surplus",
+    desc: "Fructe mixte: mere, banane și portocale",
+    qty: 10,
+    distance: "2.1 km",
+    img: "https://images.unsplash.com/photo-1619566636858-adf3ef46400b",
+  },
+  {
+    id: "2",
+    title: "Colecție Ierburi Aromatice",
+    desc: "Busuioc, mentă, rozmarin",
+    qty: 15,
+    distance: "1.8 km",
+    img: "https://images.unsplash.com/photo-1466637574441-749b8f19452f",
+  },
+  {
+    id: "3",
+    title: "Cartofi Noi de Grădină",
+    desc: "Proaspeți, ideali pentru gătit",
+    qty: 20,
+    distance: "3.2 km",
+    img: "https://images.unsplash.com/photo-1518977676601-b53f82aba655",
+  },
+  {
+    id: "4",
+    title: "Ouă proaspete de fermă",
+    desc: "Ouă naturale, crescute la fermă",
+    qty: 12,
+    distance: "1.9 km",
+    img: "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f",
+  },
+  {
+    id: "5",
+    title: "Pâine cu Semințe",
+    desc: "Pâine integrală proaspătă",
+    qty: 4,
+    distance: "0.8 km",
+    img: "https://images.unsplash.com/photo-1608198093002-ad4e005484ec",
+  },
+];
+
+export default function NGO() {
+const { ngoRequests, addNgoRequest, notifications } = useApp();
+
+  const [tab, setTab] = useState("home");
+  const [selectedOffer, setSelectedOffer] = useState<any>(null);
+  const [isRequesting, setIsRequesting] = useState(false);
+  const [message, setMessage] = useState("");
+  const [qty, setQty] = useState("");
+  const [toast, setToast] = useState(false);
+  const [category, setCategory] = useState("Alimentar");
+
+  /* ================= TIME ================= */
+
+  const [fakeTime, setFakeTime] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFakeTime((prev) => new Date(prev.getTime() + 60000));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+  const [shownIds, setShownIds] = useState<string[]>([]);
+
+useEffect(() => {
+  if (!notifications.length) return;
+
+  const last = notifications[0];
+
+  if (
+    last.title === "Cerere acceptată 🎉" &&
+    !shownIds.includes(last.id)
+  ) {
+    setToast(true);
+
+    setShownIds((prev) => [...prev, last.id]);
+
+    setTimeout(() => setToast(false), 2500);
+  }
+}, [notifications]);
+
+  const rawDate = fakeTime.toLocaleDateString("ro-RO", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+
+  const formattedDate =
+    rawDate.charAt(0).toUpperCase() + rawDate.slice(1);
+
+  const formattedTime = fakeTime.toLocaleTimeString("ro-RO", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  /* ================= SUBMIT ================= */
+
+  const submitRequest = () => {
+    if (!message || !qty) return;
+
+    
+
+addNgoRequest({
+  title: category,
+  message,
+  qty,
+});
+
+// ⏱ simulate approval after 10 sec
+
+    setToast(true);
+    setMessage("");
+    setQty("");
+
+    setTimeout(() => setToast(false), 2500);
+  };
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#0f172a" }}>
+      <ScrollView style={{ padding: 16 }}>
+
+        {/* HEADER */}
+        <Text style={{ color: "#94a3b8", fontSize: 12 }}>
+          {formattedDate} • {formattedTime}
+        </Text>
+
+        <Text style={{ color: "white", fontSize: 24, fontWeight: "bold", marginTop: 4 }}>
+          FoodLink
+        </Text>
+
+        {/* VERIFICATION */}
+        <View style={{
+          backgroundColor: "#78350f",
+          padding: 12,
+          borderRadius: 10,
+          marginTop: 12,
+        }}>
+          <Text style={{ color: "#facc15", fontWeight: "600" }}>
+            Verificare în curs
+          </Text>
+          <Text style={{ color: "#fde68a", fontSize: 12 }}>
+            Contul tău este în curs de verificare.
+          </Text>
+        </View>
+
+        {/* ================= HOME ================= */}
+        {tab === "home" && !selectedOffer && (
+          <>
+            <View style={{ flexDirection: "row", gap: 10, marginTop: 16 }}>
+              <View style={{ flex: 1, backgroundColor: "#1e293b", padding: 16, borderRadius: 12, alignItems: "center" }}>
+                <Text style={{ color: "white", fontSize: 20 }}>5</Text>
+                <Text style={{ color: "#94a3b8" }}>Disponibile</Text>
+              </View>
+
+              <View style={{ flex: 1, backgroundColor: "#1e293b", padding: 16, borderRadius: 12, alignItems: "center" }}>
+                <Text style={{ color: "white", fontSize: 20 }}>1</Text>
+                <Text style={{ color: "#94a3b8" }}>Colectate</Text>
+              </View>
+            </View>
+
+            <Text style={{ color: "#94a3b8", marginTop: 16 }}>
+              MÂNCARE DONATĂ DISPONIBILĂ
+            </Text>
+
+            {offers.map((o) => (
+              <Pressable
+                key={o.id}
+                onPress={() => setSelectedOffer(o)}
+                style={{
+                  backgroundColor: "#1e293b",
+                  borderRadius: 12,
+                  padding: 12,
+                  marginTop: 10,
+                  flexDirection: "row",
+                  gap: 10,
+                }}
+              >
+                <Image source={{ uri: o.img }} style={{ width: 70, height: 70, borderRadius: 10 }} />
+
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: "white", fontWeight: "600" }}>{o.title}</Text>
+                  <Text style={{ color: "#94a3b8", fontSize: 12 }}>{o.desc}</Text>
+                  <Text style={{ color: "#22c55e" }}>Gratis</Text>
+                  <Text style={{ color: "#94a3b8", fontSize: 12 }}>
+                    {o.distance} • Qty: {o.qty}
+                  </Text>
+                </View>
+              </Pressable>
+            ))}
+          </>
+          
+        )}
+        {/* ================= OFFER DETAIL ================= */}
+{tab === "home" && selectedOffer && !isRequesting && (
+  <>
+    <Pressable onPress={() => setSelectedOffer(null)}>
+      <Text style={{ color: "#22c55e", marginTop: 16 }}>
+        ← Înapoi
+      </Text>
+    </Pressable>
+
+    <Image
+      source={{ uri: selectedOffer.img }}
+      style={{ width: "100%", height: 160, borderRadius: 12, marginTop: 10 }}
+    />
+
+    <Text style={{ color: "white", fontSize: 20, fontWeight: "600", marginTop: 10 }}>
+      {selectedOffer.title}
+    </Text>
+
+    <Text style={{ color: "#94a3b8", marginTop: 4 }}>
+      {selectedOffer.desc}
+    </Text>
+
+    <Text style={{ color: "#94a3b8", marginTop: 4 }}>
+      {selectedOffer.distance} • Qty: {selectedOffer.qty}
+    </Text>
+
+    {/* ✅ THIS is your "order" button */}
+    <Pressable
+  onPress={() => setIsRequesting(true)}
+      style={{
+        backgroundColor: "#22c55e",
+        padding: 14,
+        borderRadius: 12,
+        marginTop: 16,
+        alignItems: "center",
+      }}
+    >
+      <Text style={{ color: "white", fontWeight: "600" }}>
+        Colectează
+      </Text>
+    </Pressable>
+  </>
+)}
+{/* ================= REQUEST SCREEN ================= */}
+{tab === "home" && selectedOffer && isRequesting && (
+  <>
+    <Pressable onPress={() => setIsRequesting(false)}>
+      <Text style={{ color: "#22c55e", marginTop: 16 }}>
+        ← Înapoi
+      </Text>
+    </Pressable>
+
+    <Text style={{ color: "white", fontSize: 20, marginTop: 10 }}>
+      Solicitare pentru {selectedOffer.title}
+    </Text>
+
+    <Text style={{ color: "#94a3b8", marginTop: 16 }}>Mesaj</Text>
+    <TextInput
+      placeholder="Descrie nevoia..."
+      placeholderTextColor="#94a3b8"
+      value={message}
+      onChangeText={setMessage}
+      style={{
+        backgroundColor: "#1e293b",
+        padding: 12,
+        borderRadius: 10,
+        marginTop: 6,
+        color: "white",
+        height: 100,
+      }}
+      multiline
+    />
+
+    <Text style={{ color: "#94a3b8", marginTop: 16 }}>Cantitate</Text>
+    <TextInput
+      placeholder="Cantitate"
+      placeholderTextColor="#94a3b8"
+      value={qty}
+      onChangeText={setQty}
+      keyboardType="numeric"
+      style={{
+        backgroundColor: "#1e293b",
+        padding: 12,
+        borderRadius: 10,
+        marginTop: 6,
+        color: "white",
+      }}
+    />
+
+    <Pressable
+      onPress={() => {
+        submitRequest();
+        setIsRequesting(false);
+        setSelectedOffer(null);
+      }}
+      style={{
+        backgroundColor: "#22c55e",
+        padding: 14,
+        borderRadius: 12,
+        marginTop: 16,
+        alignItems: "center",
+      }}
+    >
+      <Text style={{ color: "white", fontWeight: "600" }}>
+        Trimite solicitare
+      </Text>
+    </Pressable>
+  </>
+)}
+
+        {/* ================= CERERI ================= */}
+        {tab === "cereri" && (
+          <>
+            <Text style={{ color: "white", fontSize: 22, fontWeight: "600", marginTop: 16 }}>
+              Solicită mâncare gratuită
+            </Text>
+
+            <Text style={{ color: "#94a3b8", marginBottom: 16 }}>
+              Trimite cereri gratuite către producători
+            </Text>
+
+            <Text style={{ color: "#94a3b8" }}>Categorie</Text>
+
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 8 }}>
+              {["Pizza", "Panificație", "Alimentar", "Restaurant", "Fermier"].map((c) => (
+                <Pressable
+                  key={c}
+                  onPress={() => setCategory(c)}
+                  style={{
+                    paddingVertical: 10,
+                    paddingHorizontal: 16,
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    borderColor: category === c ? "#22c55e" : "#334155",
+                    backgroundColor: category === c ? "#22c55e20" : "#1e293b",
+                  }}
+                >
+                  <Text style={{
+                    color: category === c ? "#22c55e" : "#94a3b8",
+                    fontWeight: "500",
+                  }}>
+                    {c}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+
+            <Text style={{ color: "#94a3b8", marginTop: 16 }}>Mesaj</Text>
+
+            <TextInput
+              placeholder="Descrie nevoia..."
+              placeholderTextColor="#94a3b8"
+              multiline
+              value={message}
+              onChangeText={setMessage}
+              style={{
+                backgroundColor: "#1e293b",
+                padding: 12,
+                borderRadius: 10,
+                marginTop: 6,
+                color: "white",
+                height: 100,
+                textAlignVertical: "top",
+              }}
+            />
+
+            <Text style={{ color: "#94a3b8", marginTop: 16 }}>Cantitate</Text>
+
+            <TextInput
+              placeholder="Cantitate"
+              placeholderTextColor="#94a3b8"
+              value={qty}
+              onChangeText={setQty}
+              keyboardType="numeric"
+              style={{
+                backgroundColor: "#1e293b",
+                padding: 12,
+                borderRadius: 10,
+                marginTop: 6,
+                color: "white",
+              }}
+            />
+
+            <Pressable
+              onPress={submitRequest}
+              style={{
+                backgroundColor: "#22c55e",
+                padding: 14,
+                borderRadius: 12,
+                marginTop: 16,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "white", fontWeight: "600" }}>
+                Trimite cererea (gratis)
+              </Text>
+            </Pressable>
+
+            {/* CERERILE TALE */}
+            <Text style={{ color: "#94a3b8", marginTop: 24 }}>
+              CERERILE TALE
+            </Text>
+
+            {ngoRequests.map((r) => (
+              <View
+                key={r.id}
+                style={{
+                  backgroundColor: "#1e293b",
+                  padding: 14,
+                  borderRadius: 12,
+                  marginTop: 10,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <View style={{ flex: 1 }}>
+                  <Text style={{ color: "white" }}>
+                    {r.message}
+                  </Text>
+                  <Text style={{ color: "#94a3b8", fontSize: 12 }}>
+                    Qty: {r.qty} • Gratis
+                  </Text>
+                </View>
+
+                <View style={{
+                  backgroundColor: r.status === "pending" ? "#facc1520" : "#22c55e20",
+                  paddingHorizontal: 10,
+                  paddingVertical: 4,
+                  borderRadius: 8,
+                }}>
+                  <Text style={{
+                    color: r.status === "pending" ? "#facc15" : "#22c55e",
+                    fontSize: 12,
+                    fontWeight: "600",
+                  }}>
+                    {r.status === "pending" ? "în așteptare" : "acceptat"}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </>
+        )}
+
+        {/* PROFILE */}
+        {tab === "profile" && (
+          <Pressable style={{
+            backgroundColor: "#1e293b",
+            padding: 14,
+            borderRadius: 10,
+            marginTop: 16,
+          }}>
+            <Text style={{ color: "white" }}>
+              Informații factură
+            </Text>
+          </Pressable>
+        )}
+
+      </ScrollView>
+
+      {/* NAV */}
+      <View style={{
+        flexDirection: "row",
+        justifyContent: "space-around",
+        padding: 12,
+        borderTopWidth: 1,
+        borderColor: "#1e293b",
+      }}>
+        {["Home", "Cereri", "Profil"].map((t) => (
+          <Pressable key={t} onPress={() => {
+  setTab(t.toLowerCase());
+  setSelectedOffer(null);
+setIsRequesting(false);// ✅ prevents blank screen bug
+}}>
+            <Text style={{
+              color: tab === t.toLowerCase() ? "#22c55e" : "#94a3b8",
+            }}>
+              {t}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
+
+      {/* TOAST */}
+      {toast && (
+        <Toast
+          title="Cerere trimisă!"
+          message="Producătorul va fi notificat"
+        />
+      )}
+    </SafeAreaView>
+  );
+}

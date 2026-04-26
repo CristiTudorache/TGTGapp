@@ -25,8 +25,8 @@ type Order = {
   status: OrderStatus;
   paymentMethod?: "card" | "cash";
   contested?: boolean;
-  contestAccepted?: boolean; // ✅ NEW
-  contestReason?: string;    // ✅ NEW
+  contestAccepted?: boolean;
+  contestReason?: string;
 };
 
 type Donation = {
@@ -54,6 +54,10 @@ type Notification = {
 /* ================= CONTEXT TYPE ================= */
 
 type AppContextType = {
+  ngoRequests: any[];
+  addNgoRequest: (req: any) => void;
+  updateNgoRequest: (id: string, status: string) => void; // ✅ NEW
+
   factura: Factura | null;
   setFactura: (f: Factura) => void;
 
@@ -93,6 +97,39 @@ export const AppProvider = ({ children }: any) => {
   const [donations, setDonations] = useState<Donation[]>([]);
   const [points, setPoints] = useState(0);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [ngoRequests, setNgoRequests] = useState<any[]>([]);
+
+  /* ================= NGO ================= */
+
+  const addNgoRequest = (req: any) => {
+    const newRequest = {
+      id: Date.now().toString() + Math.random(),
+      status: "pending",
+      ...req,
+    };
+
+    setNgoRequests((prev) => [newRequest, ...prev]);
+
+    // ⏱ auto accept after 10 seconds
+    setTimeout(() => {
+  updateNgoRequest(newRequest.id, "accepted");
+
+  addNotification({
+    id: Date.now().toString(),
+    title: "Cerere acceptată 🎉",
+    message: "Un producător a acceptat cererea ta",
+    read: false,
+  });
+}, 10000);
+  };
+
+  const updateNgoRequest = (id: string, status: string) => {
+    setNgoRequests((prev) =>
+      prev.map((r) =>
+        r.id === id ? { ...r, status } : r
+      )
+    );
+  };
 
   /* ---------- NOTIFICATIONS ---------- */
 
@@ -166,7 +203,6 @@ export const AppProvider = ({ children }: any) => {
     if (order.paymentMethod !== "card") return;
     if (order.contested) return;
 
-    // mark immediately
     setOrders((prev) =>
       prev.map((o) =>
         o.id === id
@@ -184,11 +220,11 @@ export const AppProvider = ({ children }: any) => {
 
     setTimeout(() => {
       const currentOrder = orders.find((o) => o.id === id);
-if (!currentOrder) return;
+      if (!currentOrder) return;
 
-const price = parseFloat(
-  currentOrder.item.price.replace(",", ".").replace(/[^\d.]/g, "")
-);
+      const price = parseFloat(
+        currentOrder.item.price.replace(",", ".").replace(/[^\d.]/g, "")
+      );
 
       const fullPoints = Math.floor(price);
       const refund = Math.floor(price * 0.25);
@@ -203,12 +239,12 @@ const price = parseFloat(
       });
 
       setOrders((prev) =>
-  prev.map((o) =>
-    o.id === id
-      ? { ...o, contested: true, contestAccepted: true }
-      : o
-  )
-);
+        prev.map((o) =>
+          o.id === id
+            ? { ...o, contested: true, contestAccepted: true }
+            : o
+        )
+      );
     }, 10000);
   };
 
@@ -307,6 +343,9 @@ const price = parseFloat(
         notifications,
         addNotification,
         markAllRead,
+        ngoRequests,
+        addNgoRequest,
+        updateNgoRequest, // ✅ NEW
       }}
     >
       {children}
