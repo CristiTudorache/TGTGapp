@@ -13,13 +13,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Checkout() {
   const router = useRouter();
-  const { item, donation } = useLocalSearchParams(); // ✅ ADD donation flag
+  const { item, donation } = useLocalSearchParams();
 
   const parsedItem = item ? JSON.parse(item as string) : null;
 
-  const { addOrder, addCard, addDonation, cards } = useApp(); // ✅ ADD addDonation
+  // ✅ IMPORTANT: include addPoints
+  const { addOrder, addCard, addDonation, cards, addPoints } = useApp();
 
-  const isDonation = donation === "true"; // ✅ FLAG
+  const isDonation = donation === "true";
 
   const [step, setStep] = useState<"method" | "card">(
     isDonation ? "card" : "method"
@@ -43,7 +44,7 @@ export default function Checkout() {
   const handlePay = () => {
     if (!parsedItem) return;
 
-    // ❗ CARD VALIDATION (always for donation)
+    // CARD VALIDATION
     if (cardMode === "saved" && !selectedCardId) {
       alert("Selectează un card salvat");
       return;
@@ -56,7 +57,7 @@ export default function Checkout() {
       }
     }
 
-    // ✅ SAVE CARD
+    // SAVE CARD
     if (cardMode === "new" && saveCard) {
       addCard({
         id: Date.now().toString(),
@@ -66,26 +67,35 @@ export default function Checkout() {
       });
     }
 
-    // ================= DIFFERENCE HERE =================
-
+    // ================= DONATION =================
     if (isDonation) {
-      // ❤️ DONATION FLOW
       addDonation({
         id: Date.now().toString(),
         item: parsedItem,
         date: Date.now(),
       });
 
-      router.replace("/main"); // back to home
+      router.replace("/main");
       return;
     }
 
-    // 🛒 NORMAL ORDER
+    // ================= NORMAL ORDER =================
     addOrder({
       id: Date.now().toString(),
       item: parsedItem,
       date: Date.now(),
     });
+
+    // ⭐ ADD POINTS (FIX)
+    if (parsedItem.price) {
+      const priceNumber = Math.round(
+        parseFloat(parsedItem.price.replace(",", "."))
+      );
+
+      if (!isNaN(priceNumber)) {
+        addPoints(priceNumber); // 1 RON = 1 point
+      }
+    }
 
     router.replace({
       pathname: "/main",
@@ -109,19 +119,14 @@ export default function Checkout() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0f172a" }}>
-      <ScrollView
-        contentContainerStyle={{
-          padding: 16,
-          paddingBottom: 40,
-        }}
-      >
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
         <BackButton />
 
         <Text style={{ color: "white", fontSize: 22, marginBottom: 20 }}>
           {isDonation ? "Donează" : "Checkout"}
         </Text>
 
-        {/* ================= STEP 1 (HIDDEN FOR DONATION) ================= */}
+        {/* STEP 1 */}
         {!isDonation && step === "method" && (
           <>
             <Text style={{ color: "white", marginBottom: 10 }}>
@@ -131,6 +136,8 @@ export default function Checkout() {
             <Pressable
               onPress={() => {
                 setMethod("cash");
+
+                // cash = still gives points
                 handlePay();
               }}
               style={{
@@ -163,7 +170,7 @@ export default function Checkout() {
           </>
         )}
 
-        {/* ================= CARD STEP ================= */}
+        {/* CARD STEP */}
         {(step === "card" || isDonation) && (
           <>
             {!isDonation && (
@@ -179,7 +186,10 @@ export default function Checkout() {
             </Text>
 
             <View style={{ flexDirection: "row", marginBottom: 14 }}>
-              <Pressable onPress={() => setCardMode("new")} style={{ marginRight: 20 }}>
+              <Pressable
+                onPress={() => setCardMode("new")}
+                style={{ marginRight: 20 }}
+              >
                 <Text style={{ color: cardMode === "new" ? "#22c55e" : "white" }}>
                   Card nou
                 </Text>

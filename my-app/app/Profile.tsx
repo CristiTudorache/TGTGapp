@@ -14,8 +14,8 @@ export default function Profile() {
   const router = useRouter();
   const { user, setUser } = useUser();
 
-  // ✅ include donations
-  const { orders, donations } = useApp();
+  // ✅ UPDATED: include points
+  const { orders, donations, points } = useApp();
 
   const [editing, setEditing] = useState(false);
 
@@ -39,27 +39,7 @@ export default function Profile() {
     setEditing(false);
   };
 
-  // ================= REWARD LOGIC =================
-
-  const parsePrice = (price: string) => {
-    return Math.round(parseFloat(price.replace(",", ".")));
-  };
-
-  // ✅ orders money
-  const totalSpentOrders = orders.reduce((sum, order) => {
-    return sum + parsePrice(order.item.price);
-  }, 0);
-
-  // ✅ donations money
-  const totalSpentDonations = donations.reduce((sum, d) => {
-    return sum + parsePrice(d.item.price);
-  }, 0);
-
-  // ✅ FINAL TOTAL
-  const totalSpent = totalSpentOrders + totalSpentDonations;
-
-  // ✅ points = total lei spent
-  const totalPoints = totalSpent;
+  // ================= STATS =================
 
   const totalOrders = orders.length;
   const totalDonations = donations.length;
@@ -175,7 +155,7 @@ export default function Profile() {
           {/* POINTS */}
           <View>
             <Text style={{ color: "#22c55e", fontSize: 16 }}>
-              {totalPoints}
+              {points}
             </Text>
             <Text style={{ color: "#94a3b8", fontSize: 12 }}>
               Puncte
@@ -192,16 +172,6 @@ export default function Profile() {
             </Text>
           </View>
 
-          {/* MONEY */}
-          <View>
-            <Text style={{ color: "#22c55e", fontSize: 16 }}>
-              {totalSpent}
-            </Text>
-            <Text style={{ color: "#94a3b8", fontSize: 12 }}>
-              RON
-            </Text>
-          </View>
-
           {/* DONATIONS */}
           <View>
             <Text style={{ color: "#22c55e", fontSize: 16 }}>
@@ -213,6 +183,24 @@ export default function Profile() {
           </View>
         </View>
       </View>
+
+      {/* ================= REWARD STORE ================= */}
+      <Pressable
+        style={menuItem}
+        onPress={() => router.push("/rewards")}
+      >
+        <View>
+          <Text style={{ color: "white" }}>
+            🎁 Magazin Recompense
+          </Text>
+
+          <Text style={subText}>
+            Folosește punctele pentru premii
+          </Text>
+        </View>
+
+        <Text style={arrow}>{">"}</Text>
+      </Pressable>
 
       {/* ================= CARDS ================= */}
       <Pressable

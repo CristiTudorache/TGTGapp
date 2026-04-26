@@ -17,14 +17,14 @@ type Order = {
   date: number;
 };
 
-// ❤️ DONATION (NEW)
+// ❤️ DONATION
 type Donation = {
   id: string;
   item: any;
   date: number;
 };
 
-// 🧾 FACTURA (FULL VERSION)
+// 🧾 FACTURA
 type Factura = {
   name: string;
   company?: string;
@@ -37,22 +37,23 @@ type Factura = {
 /* ================= CONTEXT TYPE ================= */
 
 type AppContextType = {
-  // FACTURA
   factura: Factura | null;
   setFactura: (f: Factura) => void;
 
-  // CARDS
   cards: Card[];
   addCard: (card: Card) => void;
   removeCard: (id: string) => void;
 
-  // ORDERS
   orders: Order[];
   addOrder: (order: Order) => void;
 
-  // ❤️ DONATIONS (NEW)
   donations: Donation[];
   addDonation: (donation: Donation) => void;
+
+  // ⭐ POINTS
+  points: number;
+  addPoints: (amount: number) => void;
+  usePoints: (amount: number) => void;
 };
 
 /* ================= CONTEXT ================= */
@@ -65,9 +66,10 @@ export const AppProvider = ({ children }: any) => {
   const [factura, setFactura] = useState<Factura | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
-
-  // ❤️ NEW STATE
   const [donations, setDonations] = useState<Donation[]>([]);
+
+  // ✅ FIX: start from 0 (real system)
+  const [points, setPoints] = useState(0);
 
   /* ---------- CARD FUNCTIONS ---------- */
 
@@ -91,6 +93,16 @@ export const AppProvider = ({ children }: any) => {
     setDonations((prev) => [donation, ...prev]);
   };
 
+  /* ---------- POINT FUNCTIONS ---------- */
+
+  const addPoints = (amount: number) => {
+    setPoints((prev) => prev + amount);
+  };
+
+  const usePoints = (amount: number) => {
+    setPoints((prev) => Math.max(prev - amount, 0));
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -104,9 +116,12 @@ export const AppProvider = ({ children }: any) => {
         orders,
         addOrder,
 
-        // ❤️ NEW
         donations,
         addDonation,
+
+        points,
+        addPoints,
+        usePoints,
       }}
     >
       {children}
