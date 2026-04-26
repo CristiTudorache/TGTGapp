@@ -21,6 +21,7 @@ import SponsoredCard from "../components/SponsoredCard";
 import PickupTime from "../components/PickupTime";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "../components/toast";
+import { TextInput } from "react-native";
 const products = [
   {
     id: "1",
@@ -319,7 +320,7 @@ const markers = [
 
 export default function Main() {
   const params = useLocalSearchParams();
-const { orders, notifications, markAllRead } = useApp();
+const { orders, notifications, markAllRead, completeOrder, missOrder, applyContestatie } = useApp();
   const [tab, setTab] = useState(
   (params.tab as string) || "home"
 );
@@ -339,8 +340,18 @@ useEffect(() => {
   const [lastSeenNotificationId, setLastSeenNotificationId] = useState<string | null>(null);
 const { factura } = useApp();
 const hasFactura = !!factura; // first time only
+const [contestText, setContestText] = useState("");
+const [contestOpen, setContestOpen] = useState<string | null>(null);
 const router = useRouter();
 const [showDonation, setShowDonation] = useState<string | null>(null);
+const [reviewOpen, setReviewOpen] = useState<string | null>(null);
+const [rating, setRating] = useState(0);
+const [reviewText, setReviewText] = useState("");
+const handleReorder = (item: any) => {
+  setSelectedProduct(item);
+  setPreviousTab("orders");
+  setTab("product");
+};
   const [scrollY, setScrollY] = useState(0);
 const [scrollX, setScrollX] = useState(0);
 const [appTime, setAppTime] = useState(
@@ -513,6 +524,13 @@ const itemString = JSON.stringify(item);
     </Pressable>
   );
 };
+const activeOrders = orders.filter(
+  (o) => o.status !== "completed" && o.status !== "missed"
+);
+
+const historyOrders = orders.filter(
+  (o) => o.status === "completed" || o.status === "missed"
+);
 
 
   return (
@@ -927,20 +945,16 @@ const itemString = JSON.stringify(item);
       FoodLink — Comenzi
     </Text>
 
-    <Text style={{ color: "#94a3b8", marginBottom: 20 }}>
-      Comenzi active și istoricul comenzilor
+    <Text style={{ color: "#94a3b8", marginBottom: 10 }}>
+      Comenzi active
     </Text>
 
-    {orders.length === 0 ? (
-      <View style={{ alignItems: "center", marginTop: 80 }}>
-        <Text style={{ fontSize: 50, marginBottom: 10 }}>📦</Text>
-
-        <Text style={{ color: "#94a3b8", fontSize: 16 }}>
-          Nicio comandă încă
-        </Text>
-      </View>
+    {activeOrders.length === 0 ? (
+      <Text style={{ color: "#94a3b8" }}>
+        Nicio comandă activă
+      </Text>
     ) : (
-      orders.map((order) => (
+      activeOrders.map((order) => (
         <View
           key={order.id}
           style={{
@@ -948,21 +962,80 @@ const itemString = JSON.stringify(item);
             padding: 14,
             borderRadius: 12,
             marginBottom: 12,
-            flexDirection: "row",
-            alignItems: "center",
           }}
         >
-          <Image
-            source={{ uri: order.item.image }}
-            style={{
-              width: 70,
-              height: 70,
-              borderRadius: 10,
-              marginRight: 10,
-            }}
-          />
+          <Text style={{ color: "white", fontWeight: "bold" }}>
+            {order.item.title}
+          </Text>
 
-          <View style={{ flex: 1 }}>
+          <Text style={{ color: "#22c55e" }}>
+            {order.item.price}
+          </Text>
+
+          <Text style={{ color: "#94a3b8", marginTop: 6 }}>
+            {{
+              reserved: "Rezervată",
+              preparing: "În pregătire",
+              packing: "Ambalare",
+              ready: "Gata de ridicare",
+            }[order.status]}
+          </Text>
+
+          {/* ✅ READY ACTIONS */}
+          {order.status === "ready" && (
+            <>
+              <Pressable
+                onPress={() => completeOrder(order.id)}
+                style={{
+                  marginTop: 10,
+                  backgroundColor: "#22c55e",
+                  padding: 10,
+                  borderRadius: 8,
+                }}
+              >
+                <Text style={{ color: "white", textAlign: "center" }}>
+                  📦 Am ridicat comanda
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => missOrder(order.id)}
+                style={{
+                  marginTop: 6,
+                  backgroundColor: "#ef4444",
+                  padding: 10,
+                  borderRadius: 8,
+                }}
+              >
+                <Text style={{ color: "white", textAlign: "center" }}>
+                  ❌ N-am ridicat
+                </Text>
+              </Pressable>
+            </>
+          )}
+        </View>
+      ))
+    )}
+
+    {/* ================= HISTORY ================= */}
+
+    {historyOrders.length > 0 && (
+      <>
+        <Text style={{ color: "#94a3b8", marginTop: 20 }}>
+          Istoric
+        </Text>
+
+        {historyOrders.map((order) => (
+          <View
+            key={order.id}
+            style={{
+              backgroundColor:
+                order.status === "missed" ? "#3f1d1d" : "#1e293b",
+              padding: 14,
+              borderRadius: 12,
+              marginBottom: 10,
+            }}
+          >
             <Text style={{ color: "white", fontWeight: "bold" }}>
               {order.item.title}
             </Text>
@@ -971,26 +1044,204 @@ const itemString = JSON.stringify(item);
               {order.item.price}
             </Text>
 
-            <View
+            <Text
+              style={{
+                marginTop: 6,
+                color:
+                  order.status === "missed"
+                    ? "#ef4444"
+                    : "#22c55e",
+              }}
+            >
+              {order.status === "missed"
+                ? "❌ Comandă neridicată"
+                : "✅ Ridicată"}
+            </Text>
+            {order.status === "missed" && (
+  <View style={{ marginTop: 10 }}>
+
+    {/* WARNING */}
+    <Text style={{ color: "#f87171", marginBottom: 6 }}>
+      Comanda nu a fost ridicată la timp.  
+      Poți depune o contestație doar în cazuri serioase.
+    </Text>
+
+    {/* TOGGLE BUTTON */}
+    {!order.contested && (
+      <Pressable
+        onPress={() =>
+          setContestOpen(contestOpen === order.id ? null : order.id)
+        }
+        style={{
+          backgroundColor: "#334155",
+          padding: 8,
+          borderRadius: 6,
+          marginBottom: 6,
+        }}
+      >
+        <Text style={{ color: "white", textAlign: "center" }}>
+          📞 Scrie contestație
+        </Text>
+      </Pressable>
+    )}
+
+    {/* INPUT UI */}
+    {contestOpen === order.id && (
+      <View style={{ marginTop: 6 }}>
+
+        <TextInput
+  value={contestText}
+  onChangeText={setContestText}
+  placeholder="Scrie motivul..."
+  placeholderTextColor="#94a3b8"
+  multiline
   style={{
-    marginTop: 6,
-    alignSelf: "flex-start",
-    backgroundColor: "#22c55e",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
+    backgroundColor: "#0f172a",
+    padding: 10,
+    borderRadius: 6,
+    marginBottom: 8,
+    color: "white",
+    minHeight: 60,
+  }}
+/>
+
+<Pressable
+  onPress={() => {
+    if (!contestText.trim()) {
+      alert("Scrie motivul contestației");
+      return;
+    }
+
+    applyContestatie(order.id, contestText);
+    setContestOpen(null);
+    setContestText("");
+  }}
+  style={{
+    backgroundColor: "#ef4444",
+    padding: 10,
+    borderRadius: 6,
   }}
 >
-  <Text style={{ color: "white", fontSize: 12 }}>
-    Rezervat
+  <Text style={{ color: "white", textAlign: "center" }}>
+    Trimite contestație
   </Text>
-</View>
+</Pressable>
+      </View>
+    )}
+
+    {/* STATUS */}
+    {order.contested && (
+  <Text
+    style={{
+      marginTop: 6,
+      color: order.contestAccepted ? "#22c55e" : "#94a3b8",
+    }}
+  >
+    {order.contestAccepted
+      ? "✅ Contestație acceptată"
+      : "⏳ Contestație în proces..."}
+  </Text>
+)}
+  </View>
+)}
+
+            {/* ONLY IF COMPLETED */}
+            {order.status === "completed" && (
+              <View style={{ marginTop: 8 }}>
+                {/* REVIEW BUTTON */}
+<Pressable
+  onPress={() =>
+    setReviewOpen(reviewOpen === order.id ? null : order.id)
+  }
+  style={{
+    backgroundColor: "#334155",
+    padding: 8,
+    borderRadius: 6,
+    marginBottom: 6,
+  }}
+>
+  <Text style={{ color: "white", textAlign: "center" }}>
+    ⭐ Lasă review
+  </Text>
+</Pressable>
+
+{/* REVIEW UI */}
+{reviewOpen === order.id && (
+  <View style={{ marginTop: 10 }}>
+    
+    <View style={{ flexDirection: "row", marginBottom: 6 }}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <Pressable key={i} onPress={() => setRating(i)}>
+          <Text style={{ fontSize: 20 }}>
+            {i <= rating ? "⭐" : "☆"}
+          </Text>
+        </Pressable>
+      ))}
+    </View>
+
+    <Pressable
+      style={{
+        backgroundColor: "#0f172a",
+        padding: 10,
+        borderRadius: 6,
+        marginBottom: 8,
+      }}
+    >
+      <Text style={{ color: "white" }}>
+        {reviewText || "Scrie aici..."}
+      </Text>
+    </Pressable>
+
+    <Pressable
+      onPress={() => {
+        setReviewOpen(null);
+        setRating(0);
+        setReviewText("");
+      }}
+      style={{
+        backgroundColor: "#22c55e",
+        padding: 10,
+        borderRadius: 6,
+        marginBottom: 6,
+      }}
+    >
+      <Text style={{ color: "white", textAlign: "center" }}>
+        Trimite review
+      </Text>
+    </Pressable>
+
+    <Pressable onPress={() => setReviewOpen(null)}>
+      <Text style={{ color: "#94a3b8", textAlign: "center" }}>
+        Anulează
+      </Text>
+    </Pressable>
+
+  </View>
+)}
+
+
+                <Pressable
+  onPress={() => handleReorder(order.item)}
+  style={{
+    backgroundColor: "#22c55e",
+    padding: 8,
+    borderRadius: 6,
+  }}
+>
+  <Text style={{ color: "white", textAlign: "center" }}>
+    🔁 Comandă din nou
+  </Text>
+</Pressable>
+              </View>
+            )}
           </View>
-        </View>
-      ))
+        ))}
+      </>
     )}
   </>
 )}
+
+
 
         {tab === "profile" && <Profile />}
       </ScrollView>

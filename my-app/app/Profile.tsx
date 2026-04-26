@@ -14,14 +14,13 @@ export default function Profile() {
   const router = useRouter();
   const { user, setUser } = useUser();
 
-  // ✅ UPDATED: include points
   const { orders, donations, points } = useApp();
 
   const [editing, setEditing] = useState(false);
 
-  const [name, setName] = useState(user.name);
-  const [email, setEmail] = useState(user.email);
-  const [location, setLocation] = useState(user.location);
+  const [name, setName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [location, setLocation] = useState(user?.location || "");
 
   const save = () => {
     if (!name || !email || !location) {
@@ -44,6 +43,9 @@ export default function Profile() {
   const totalOrders = orders.length;
   const totalDonations = donations.length;
 
+  // ⭐ progress bar (100 pts = full)
+  const progress = Math.min(points / 100, 1);
+
   // ================= UI =================
 
   return (
@@ -56,26 +58,10 @@ export default function Profile() {
       }}
     >
       {/* TITLE */}
-      <Text
-        style={{
-          color: "white",
-          fontSize: 22,
-          marginBottom: 20,
-          fontWeight: "bold",
-        }}
-      >
-        Profil
-      </Text>
+      <Text style={title}>Profil</Text>
 
       {/* ================= PROFILE CARD ================= */}
-      <View
-        style={{
-          backgroundColor: "#1e293b",
-          padding: 16,
-          borderRadius: 12,
-          marginBottom: 20,
-        }}
-      >
+      <View style={card}>
         {editing ? (
           <>
             <Text style={label}>Nume</Text>
@@ -112,15 +98,15 @@ export default function Profile() {
         ) : (
           <>
             <Text style={{ color: "white", fontSize: 18, marginBottom: 6 }}>
-              {user.name}
+              {user?.name}
             </Text>
 
             <Text style={{ color: "#94a3b8", marginBottom: 4 }}>
-              {user.email}
+              {user?.email}
             </Text>
 
             <Text style={{ color: "#94a3b8" }}>
-              {user.location}
+              {user?.location}
             </Text>
 
             <Pressable
@@ -134,135 +120,121 @@ export default function Profile() {
       </View>
 
       {/* ================= REWARDS ================= */}
-      <View
-        style={{
-          backgroundColor: "#1e293b",
-          padding: 16,
-          borderRadius: 12,
-          marginBottom: 16,
-        }}
-      >
+      <View style={card}>
         <Text style={{ color: "white", marginBottom: 10 }}>
           Puncte de recompensă
         </Text>
 
+        {/* ⭐ POINTS */}
+        <Text
+          style={{
+            color: "#22c55e",
+            fontSize: 22,
+            fontWeight: "bold",
+            marginBottom: 8,
+          }}
+        >
+          {points} puncte
+        </Text>
+
+        {/* 📊 PROGRESS BAR */}
+        <View
+          style={{
+            height: 6,
+            backgroundColor: "#334155",
+            borderRadius: 3,
+            overflow: "hidden",
+            marginBottom: 12,
+          }}
+        >
+          <View
+            style={{
+              height: 6,
+              width: `${progress * 100}%`,
+              backgroundColor: "#22c55e",
+            }}
+          />
+        </View>
+
+        <Text style={{ color: "#94a3b8", fontSize: 12 }}>
+          Primești puncte din comenzi și contestații aprobate
+        </Text>
+
+        {/* STATS */}
         <View
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
+            marginTop: 12,
           }}
         >
-          {/* POINTS */}
-          <View>
-            <Text style={{ color: "#22c55e", fontSize: 16 }}>
-              {points}
-            </Text>
-            <Text style={{ color: "#94a3b8", fontSize: 12 }}>
-              Puncte
-            </Text>
-          </View>
-
-          {/* ORDERS */}
-          <View>
-            <Text style={{ color: "#22c55e", fontSize: 16 }}>
-              {totalOrders}
-            </Text>
-            <Text style={{ color: "#94a3b8", fontSize: 12 }}>
-              Comenzi
-            </Text>
-          </View>
-
-          {/* DONATIONS */}
-          <View>
-            <Text style={{ color: "#22c55e", fontSize: 16 }}>
-              {totalDonations}
-            </Text>
-            <Text style={{ color: "#94a3b8", fontSize: 12 }}>
-              Donații ❤️
-            </Text>
-          </View>
+          <Stat label="Comenzi" value={totalOrders} />
+          <Stat label="Donații ❤️" value={totalDonations} />
         </View>
       </View>
 
-      {/* ================= REWARD STORE ================= */}
-      <Pressable
-        style={menuItem}
+      {/* ================= MENU ================= */}
+
+      <MenuItem
+        title="🎁 Magazin Recompense"
+        subtitle="Folosește punctele pentru premii"
         onPress={() => router.push("/rewards")}
-      >
-        <View>
-          <Text style={{ color: "white" }}>
-            🎁 Magazin Recompense
-          </Text>
+      />
 
-          <Text style={subText}>
-            Folosește punctele pentru premii
-          </Text>
-        </View>
-
-        <Text style={arrow}>{">"}</Text>
-      </Pressable>
-
-      {/* ================= CARDS ================= */}
-      <Pressable
-        style={menuItem}
+      <MenuItem
+        title="💳 Carduri salvate"
+        subtitle="Adaugă sau editează carduri"
         onPress={() => router.push("/cards")}
-      >
-        <View>
-          <Text style={{ color: "white" }}>
-            💳 Carduri salvate
-          </Text>
+      />
 
-          <Text style={subText}>
-            Adaugă sau editează carduri
-          </Text>
-        </View>
-
-        <Text style={arrow}>{">"}</Text>
-      </Pressable>
-
-      {/* ================= FACTURA ================= */}
-      <Pressable
-        style={menuItem}
+      <MenuItem
+        title="📄 Informații factură"
+        subtitle="Completează sau editează factura"
         onPress={() => router.push("/facturi")}
-      >
-        <View>
-          <Text style={{ color: "white" }}>
-            📄 Informații factură
-          </Text>
+      />
 
-          <Text style={subText}>
-            Completează sau editează factura
-          </Text>
-        </View>
-
-        <Text style={arrow}>{">"}</Text>
-      </Pressable>
-
-      {/* ================= LOGOUT ================= */}
-      <Pressable
-        style={{
-          marginTop: 20,
-          padding: 14,
-          borderRadius: 10,
-          borderWidth: 1,
-          borderColor: "#ef4444",
-        }}
-      >
-        <Text
-          style={{
-            color: "#ef4444",
-            textAlign: "center",
-            fontWeight: "bold",
-          }}
-        >
-          Deconectare
-        </Text>
+      {/* LOGOUT */}
+      <Pressable style={logout}>
+        <Text style={logoutText}>Deconectare</Text>
       </Pressable>
     </ScrollView>
   );
 }
 
+/* ================= COMPONENTS ================= */
+
+const Stat = ({ label, value }: any) => (
+  <View>
+    <Text style={{ color: "#22c55e", fontSize: 16 }}>{value}</Text>
+    <Text style={{ color: "#94a3b8", fontSize: 12 }}>{label}</Text>
+  </View>
+);
+
+const MenuItem = ({ title, subtitle, onPress }: any) => (
+  <Pressable style={menuItem} onPress={onPress}>
+    <View>
+      <Text style={{ color: "white" }}>{title}</Text>
+      <Text style={subText}>{subtitle}</Text>
+    </View>
+    <Text style={arrow}>{">"}</Text>
+  </Pressable>
+);
+
 /* ================= STYLES ================= */
+
+const title = {
+  color: "white",
+  fontSize: 22,
+  marginBottom: 20,
+  fontWeight: "bold" as const,
+};
+
+const card = {
+  backgroundColor: "#1e293b",
+  padding: 16,
+  borderRadius: 12,
+  marginBottom: 20,
+};
 
 const input = {
   backgroundColor: "#0f172a",
@@ -313,4 +285,18 @@ const subText = {
 const arrow = {
   color: "#94a3b8",
   fontSize: 16,
+};
+
+const logout = {
+  marginTop: 20,
+  padding: 14,
+  borderRadius: 10,
+  borderWidth: 1,
+  borderColor: "#ef4444",
+};
+
+const logoutText = {
+  color: "#ef4444",
+  textAlign: "center" as const,
+  fontWeight: "bold" as const,
 };
