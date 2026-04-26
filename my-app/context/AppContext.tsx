@@ -2,7 +2,6 @@ import React, { createContext, useContext, useState } from "react";
 
 /* ================= TYPES ================= */
 
-// 💳 CARD
 type Card = {
   id: string;
   number: string;
@@ -10,21 +9,18 @@ type Card = {
   expiry: string;
 };
 
-// 📦 ORDER
 type Order = {
   id: string;
   item: any;
   date: number;
 };
 
-// ❤️ DONATION
 type Donation = {
   id: string;
   item: any;
   date: number;
 };
 
-// 🧾 FACTURA
 type Factura = {
   name: string;
   company?: string;
@@ -32,6 +28,13 @@ type Factura = {
   address: string;
   city: string;
   phone: string;
+};
+
+type Notification = {
+  id: string;
+  title: string;
+  message: string;
+  read: boolean;
 };
 
 /* ================= CONTEXT TYPE ================= */
@@ -50,10 +53,13 @@ type AppContextType = {
   donations: Donation[];
   addDonation: (donation: Donation) => void;
 
-  // ⭐ POINTS
   points: number;
   addPoints: (amount: number) => void;
   usePoints: (amount: number) => void;
+
+  notifications: Notification[];
+  addNotification: (n: Notification) => void;
+  markAllRead: () => void;
 };
 
 /* ================= CONTEXT ================= */
@@ -67,11 +73,22 @@ export const AppProvider = ({ children }: any) => {
   const [cards, setCards] = useState<Card[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [donations, setDonations] = useState<Donation[]>([]);
-
-  // ✅ FIX: start from 0 (real system)
   const [points, setPoints] = useState(0);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  /* ---------- CARD FUNCTIONS ---------- */
+  /* ---------- NOTIFICATIONS ---------- */
+
+  const addNotification = (n: Notification) => {
+    setNotifications((prev) => [n, ...prev]);
+  };
+
+  const markAllRead = () => {
+    setNotifications((prev) =>
+      prev.map((n) => ({ ...n, read: true }))
+    );
+  };
+
+  /* ---------- CARDS ---------- */
 
   const addCard = (card: Card) => {
     setCards((prev) => [...prev, card]);
@@ -81,19 +98,35 @@ export const AppProvider = ({ children }: any) => {
     setCards((prev) => prev.filter((c) => c.id !== id));
   };
 
-  /* ---------- ORDER FUNCTIONS ---------- */
+  /* ---------- ORDERS ---------- */
 
   const addOrder = (order: Order) => {
     setOrders((prev) => [order, ...prev]);
+
+    // 🔔 AUTO notification
+    addNotification({
+      id: Date.now().toString(),
+      title: "Comandă plasată",
+      message: order.item.title,
+      read: false,
+    });
   };
 
-  /* ---------- DONATION FUNCTIONS ---------- */
+  /* ---------- DONATIONS ---------- */
 
   const addDonation = (donation: Donation) => {
     setDonations((prev) => [donation, ...prev]);
+
+    // 🔔 AUTO notification
+    addNotification({
+      id: Date.now().toString(),
+      title: "Donație făcută ❤️",
+      message: donation.item.title,
+      read: false,
+    });
   };
 
-  /* ---------- POINT FUNCTIONS ---------- */
+  /* ---------- POINTS ---------- */
 
   const addPoints = (amount: number) => {
     setPoints((prev) => prev + amount);
@@ -101,7 +134,17 @@ export const AppProvider = ({ children }: any) => {
 
   const usePoints = (amount: number) => {
     setPoints((prev) => Math.max(prev - amount, 0));
+
+    // 🔔 AUTO notification
+    addNotification({
+      id: Date.now().toString(),
+      title: "Recompensă revendicată ⭐",
+      message: `Ai folosit ${amount} puncte`,
+      read: false,
+    });
   };
+
+  /* ---------- PROVIDER ---------- */
 
   return (
     <AppContext.Provider
@@ -122,6 +165,10 @@ export const AppProvider = ({ children }: any) => {
         points,
         addPoints,
         usePoints,
+
+        notifications,
+        addNotification,
+        markAllRead,
       }}
     >
       {children}

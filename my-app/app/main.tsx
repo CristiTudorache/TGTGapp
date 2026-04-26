@@ -20,6 +20,7 @@ import ClubCard from "../components/ClubCard";
 import SponsoredCard from "../components/SponsoredCard";
 import PickupTime from "../components/PickupTime";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "../components/toast";
 const products = [
   {
     id: "1",
@@ -318,7 +319,7 @@ const markers = [
 
 export default function Main() {
   const params = useLocalSearchParams();
-const { orders, addOrder } = useApp();
+const { orders, notifications, markAllRead } = useApp();
   const [tab, setTab] = useState(
   (params.tab as string) || "home"
 );
@@ -334,7 +335,8 @@ useEffect(() => {
   const [selectedStore, setSelectedStore] = useState<any>(null);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [previousTab, setPreviousTab] = useState("home");
-  
+  const [lastNotification, setLastNotification] = useState<any>(null);
+  const [lastSeenNotificationId, setLastSeenNotificationId] = useState<string | null>(null);
 const { factura } = useApp();
 const hasFactura = !!factura; // first time only
 const router = useRouter();
@@ -357,6 +359,23 @@ useEffect(() => {
 
   return () => clearInterval(interval);
 }, []);
+useEffect(() => {
+  if (notifications.length === 0) return;
+
+  const latest = notifications[0];
+
+  // ✅ prevent repeat toast
+  if (latest.id !== lastSeenNotificationId) {
+    setLastNotification(latest);
+    setLastSeenNotificationId(latest.id);
+
+    const timer = setTimeout(() => {
+      setLastNotification(null);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }
+}, [notifications]);
 
 const formatTime = (hour: number) => {
   const suffix = hour >= 12 ? "PM" : "AM";
@@ -471,7 +490,7 @@ const isClosed = end !== null && now >= end;
 
         <Pressable
           onPress={() => {
-  const itemString = JSON.stringify(selectedProduct);
+const itemString = JSON.stringify(item);
 
   if (!hasFactura) {
     router.push({
@@ -509,7 +528,36 @@ const isClosed = end !== null && now >= end;
 >
         <TopSection />
         
+        <View
+  style={{
+    position: "absolute",
+    top: 20,
+    right: 20,
+    zIndex: 10,
+  }}
+>
+  <Pressable
+    onPress={() => {
+  setTab("notifications");
+}}
+  >
+    <Text style={{ fontSize: 20 }}>🔔</Text>
 
+    {notifications.some((n) => !n.read) && (
+      <View
+        style={{
+          position: "absolute",
+          top: -2,
+          right: -2,
+          width: 8,
+          height: 8,
+          backgroundColor: "red",
+          borderRadius: 4,
+        }}
+      />
+    )}
+  </Pressable>
+</View>
         {selectedStore && (
           <>
             <Pressable onPress={() => setSelectedStore(null)}>
@@ -818,7 +866,60 @@ const isClosed = end !== null && now >= end;
             )}
           </>
         )}
+{tab === "notifications" && (
+  <>
+    {/* ✅ BACK BUTTON */}
+    <Pressable onPress={() => setTab("home")}>
+      <Text style={{ color: "#22c55e", marginBottom: 10 }}>
+        ← Înapoi
+      </Text>
+    </Pressable>
 
+    <Text style={{ color: "white", fontSize: 22, fontWeight: "bold", marginBottom: 10 }}>
+      Notificări
+    </Text>
+
+    {notifications.length === 0 ? (
+      <Text style={{ color: "#94a3b8" }}>
+        Nu ai notificări
+      </Text>
+    ) : (
+      notifications.map((n) => (
+        <View
+          key={n.id}
+          style={{
+            backgroundColor: "#1e293b",
+            padding: 12,
+            borderRadius: 10,
+            marginBottom: 10,
+          }}
+        >
+          <Text style={{ color: "white", fontWeight: "bold" }}>
+            {n.title}
+          </Text>
+
+          <Text style={{ color: "#94a3b8" }}>
+            {n.message}
+          </Text>
+        </View>
+      ))
+    )}
+
+    <Pressable
+      onPress={markAllRead}
+      style={{
+        marginTop: 10,
+        backgroundColor: "#334155",
+        padding: 10,
+        borderRadius: 8,
+      }}
+    >
+      <Text style={{ color: "white", textAlign: "center" }}>
+        Marchează toate ca citite
+      </Text>
+    </Pressable>
+  </>
+)}
         {/* ✅ UPDATED ORDERS */}
         {tab === "orders" && (
   <>
@@ -916,11 +1017,38 @@ const isClosed = end !== null && now >= end;
 </View>
       <View style={{ flexDirection: "row", justifyContent: "space-around", padding: 12, borderTopWidth: 1, borderColor: "#1e293b" }}>
         {["Home", "Favorites", "Orders", "Profile"].map((t) => (
-          <Pressable key={t} onPress={() => setTab(t.toLowerCase())}>
-            <Text style={{ color: tab === t.toLowerCase() ? "#22c55e" : "#94a3b8" }}>
-              {t}
-            </Text>
-          </Pressable>
+          <Pressable key={t} onPress={() => {
+  const newTab = t.toLowerCase();
+  setTab(newTab);
+
+  if (newTab === "orders") {
+    markAllRead(); // ✅ clears red dot
+  }
+}}>
+  <View>
+    <Text
+      style={{
+        color: tab === t.toLowerCase() ? "#22c55e" : "#94a3b8",
+      }}
+    >
+      {t}
+    </Text>
+
+    {t === "Orders" && notifications.some(n => !n.read) && (
+      <View
+        style={{
+          position: "absolute",
+          top: -4,
+          right: -10,
+          width: 8,
+          height: 8,
+          backgroundColor: "red",
+          borderRadius: 4,
+        }}
+      />
+    )}
+  </View>
+</Pressable>
         ))}
       </View>
 
@@ -973,6 +1101,12 @@ const isClosed = end !== null && now >= end;
     </View>
   </View>
 </Modal>
+{lastNotification && (
+  <Toast
+    title={lastNotification.title}
+    message={lastNotification.message}
+  />
+)}
 </SafeAreaView>
 );
 }

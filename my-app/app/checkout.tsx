@@ -17,8 +17,14 @@ export default function Checkout() {
 
   const parsedItem = item ? JSON.parse(item as string) : null;
 
-  // ✅ IMPORTANT: include addPoints
-  const { addOrder, addCard, addDonation, cards, addPoints } = useApp();
+  // ✅ ONLY ADD: addNotification
+  const {
+    addOrder,
+    addCard,
+    addDonation,
+    cards,
+    addPoints,
+  } = useApp();
 
   const isDonation = donation === "true";
 
@@ -75,6 +81,7 @@ export default function Checkout() {
         date: Date.now(),
       });
 
+
       router.replace("/main");
       return;
     }
@@ -86,16 +93,18 @@ export default function Checkout() {
       date: Date.now(),
     });
 
-    // ⭐ ADD POINTS (FIX)
+    // ⭐ ADD POINTS (1 RON = 1 point)
     if (parsedItem.price) {
       const priceNumber = Math.round(
         parseFloat(parsedItem.price.replace(",", "."))
       );
 
       if (!isNaN(priceNumber)) {
-        addPoints(priceNumber); // 1 RON = 1 point
+        addPoints(priceNumber);
       }
     }
+
+   
 
     router.replace({
       pathname: "/main",
@@ -136,8 +145,6 @@ export default function Checkout() {
             <Pressable
               onPress={() => {
                 setMethod("cash");
-
-                // cash = still gives points
                 handlePay();
               }}
               style={{

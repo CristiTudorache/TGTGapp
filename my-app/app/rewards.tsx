@@ -69,7 +69,9 @@ const rewards = [
 
 export default function Rewards() {
   const router = useRouter();
-  const { points, usePoints, addOrder } = useApp();
+
+  // ✅ ONLY CHANGE: added addNotification
+  const { points, usePoints, addOrder, addNotification } = useApp();
 
   const handleBuy = (item: any) => {
     if (points < item.points) return;
@@ -83,6 +85,14 @@ export default function Rewards() {
         price: "Plătit cu puncte",
       },
       date: Date.now(),
+    });
+
+    // 🔔 NEW (only addition)
+    addNotification({
+      id: Date.now().toString(),
+      title: "Recompensă revendicată 🎁",
+      message: `${item.title} a fost cumpărat`,
+      read: false,
     });
 
     router.push({
