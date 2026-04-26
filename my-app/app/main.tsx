@@ -500,26 +500,15 @@ const isClosed = end !== null && now >= end;
         </View>
 
         <Pressable
-          onPress={() => {
-const itemString = JSON.stringify(item);
-
-  if (!hasFactura) {
-    router.push({
-      pathname: "/facturi",
-      params: { item: itemString },
-    });
-  } else {
-    router.push({
-      pathname: "/checkout",
-      params: { item: itemString },
-    });
-  }
-}}
-        >
-          <Text>
-            {favorites.includes(item.id) ? "❤️" : "🤍"}
-          </Text>
-        </Pressable>
+  onPress={(e) => {
+    e.stopPropagation(); // ✅ prevents navigation
+    toggleFavorite(item.id); // ✅ favorites instead
+  }}
+>
+  <Text>
+    {favorites.includes(item.id) ? "❤️" : "🤍"}
+  </Text>
+</Pressable>
       </View>
     </Pressable>
   );
