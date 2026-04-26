@@ -609,23 +609,34 @@ const historyOrders = orders.filter(
                   longitudeDelta: 0.08,
                 }}
               >
-                {markers.map((m) => (
-                  <Marker
-                    key={m.id}
-                    coordinate={{ latitude: m.lat, longitude: m.lng }}
-                  >
-                    <View
-                      style={{
-                        width: 14,
-                        height: 14,
-                        backgroundColor: "red",
-                        borderRadius: 7,
-                        borderWidth: 2,
-                        borderColor: "white",
-                      }}
-                    />
-                  </Marker>
-                ))}
+                {markers.map((m) => {
+  const product = products.find((p) => p.id === m.id);
+
+  return (
+    <Marker
+      key={m.id}
+      coordinate={{ latitude: m.lat, longitude: m.lng }}
+      onPress={() => {
+        if (product) {
+          setPreviousTab("home");
+          setSelectedProduct(product);
+          setTab("product");
+        }
+      }}
+    >
+      <View
+        style={{
+          width: 14,
+          height: 14,
+          backgroundColor: "red",
+          borderRadius: 7,
+          borderWidth: 2,
+          borderColor: "white",
+        }}
+      />
+    </Marker>
+  );
+})}
               </MapView>
             ) : (
               <>
