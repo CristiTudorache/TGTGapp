@@ -77,7 +77,7 @@ export default function Onboarding() {
       />
 
       <TextInput
-        placeholder="ex: Sector 3, Drumul Taberii"
+        placeholder="ex: Sector 6, Drumul Taberei"
         placeholderTextColor="#94a3b8"
         value={location}
         onChangeText={setLocation}

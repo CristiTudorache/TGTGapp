@@ -73,6 +73,10 @@ const { ngoRequests, addNgoRequest, notifications, factura, setFactura } = useAp
   message: "",
 });
   const [category, setCategory] = useState("Alimentar");
+  const [orgName, setOrgName] = useState("");
+const [email, setEmail] = useState("");
+const [phone, setPhone] = useState("");
+const [address, setAddress] = useState("");
   const isFacturaComplete =
   factura &&
   factura.name &&
@@ -137,7 +141,9 @@ useEffect(() => {
     hour: "2-digit",
     minute: "2-digit",
   });
-
+  const isValidEmail = (email: string) => {
+  return /\S+@\S+\.\S+/.test(email);
+};
   /* ================= SUBMIT ================= */
 
   const submitRequest = () => {
@@ -198,34 +204,52 @@ addNgoRequest({
     </Text>
 
     <TextInput
-      placeholder="Nume organizație"
-      placeholderTextColor="#94a3b8"
-      style={inputStyle}
-    />
+  placeholder="Nume organizație"
+  placeholderTextColor="#94a3b8"
+  style={inputStyle}
+  value={orgName}
+  onChangeText={setOrgName}
+/>
 
     <TextInput
-      placeholder="Email"
-      placeholderTextColor="#94a3b8"
-      style={inputStyle}
-    />
+  placeholder="Email"
+  placeholderTextColor="#94a3b8"
+  style={inputStyle}
+  value={email}
+  onChangeText={setEmail}
+/>
 
     <TextInput
-      placeholder="Telefon"
-      placeholderTextColor="#94a3b8"
-      style={inputStyle}
-    />
+  placeholder="Telefon"
+  placeholderTextColor="#94a3b8"
+  style={inputStyle}
+  value={phone}
+  onChangeText={setPhone}
+/>
 
     <TextInput
-      placeholder="Adresă"
-      placeholderTextColor="#94a3b8"
-      style={inputStyle}
-    />
+  placeholder="Adresă"
+  placeholderTextColor="#94a3b8"
+  style={inputStyle}
+  value={address}
+  onChangeText={setAddress}
+/>
 
     <Pressable
       onPress={() => {
-        setIsVerified(true);
-        setTab("home");
-      }}
+  if (!orgName || !email || !phone || !address) {
+    alert("Completează toate câmpurile");
+    return;
+  }
+
+  if (!isValidEmail(email)) {
+    alert("Email invalid");
+    return;
+  }
+
+  setIsVerified(true);
+  setTab("home");
+}}
       style={{
         backgroundColor: "#22c55e",
         padding: 14,

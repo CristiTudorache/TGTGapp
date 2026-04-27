@@ -8,9 +8,9 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // ✅ ADDED: email validation
+  // ✅ better email validation
   const validateEmail = (email: string) => {
-    return email.includes("@") && email.includes(".");
+    return /\S+@\S+\.\S+/.test(email);
   };
 
   return (
@@ -28,7 +28,7 @@ export default function Signup() {
 
       <View style={{ flex: 1 }}>
 
-        {/* ✅ ADDED: LOGO */}
+        {/* LOGO */}
         <View style={{ alignItems: "center", marginBottom: 30 }}>
           <Image
             source={require("../assets/images/logo.png")}
@@ -54,6 +54,7 @@ export default function Signup() {
         </Text>
 
         <View style={{ gap: 16 }}>
+          {/* EMAIL */}
           <View>
             <Text style={{ color: "#94a3b8", marginBottom: 6 }}>Email</Text>
             <TextInput
@@ -71,10 +72,11 @@ export default function Signup() {
             />
           </View>
 
+          {/* PASSWORD */}
           <View>
             <Text style={{ color: "#94a3b8", marginBottom: 6 }}>Password</Text>
             <TextInput
-              placeholder="••••••••"
+              placeholder="Minimum 6 characters"
               placeholderTextColor="#64748b"
               secureTextEntry
               value={password}
@@ -89,11 +91,21 @@ export default function Signup() {
             />
           </View>
 
+          {/* BUTTON */}
           <Pressable
             onPress={() => {
-              // ✅ ADDED: validation check
+              if (!email || !password) {
+                Alert.alert("Error", "Completează toate câmpurile");
+                return;
+              }
+
               if (!validateEmail(email)) {
-                Alert.alert("Invalid email", "Please enter a valid email (e.g. name@gmail.com)");
+                Alert.alert("Invalid email", "Email invalid (ex: nume@gmail.com)");
+                return;
+              }
+
+              if (password.length < 6) {
+                Alert.alert("Parolă slabă", "Minim 6 caractere");
                 return;
               }
 
