@@ -36,12 +36,12 @@ type Donation = {
 };
 
 type Factura = {
-  name: string;
+  name?: string;
   company?: string;
   cui?: string;
-  address: string;
-  city: string;
-  phone: string;
+  address?: string;
+  city?: string;
+  phone?: string;
 };
 
 type Notification = {

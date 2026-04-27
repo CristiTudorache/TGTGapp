@@ -57,15 +57,25 @@ const offers = [
 ];
 
 export default function NGO() {
-const { ngoRequests, addNgoRequest, notifications } = useApp();
 
   const [tab, setTab] = useState("home");
+const { ngoRequests, addNgoRequest, notifications, factura, setFactura } = useApp();
   const [selectedOffer, setSelectedOffer] = useState<any>(null);
   const [isRequesting, setIsRequesting] = useState(false);
   const [message, setMessage] = useState("");
   const [qty, setQty] = useState("");
   const [toast, setToast] = useState(false);
   const [category, setCategory] = useState("Alimentar");
+  const collectedCount = ngoRequests.filter(
+  (r) => r.status === "accepted"
+).length;
+  const inputStyle = {
+  backgroundColor: "#1e293b",
+  padding: 12,
+  borderRadius: 10,
+  marginTop: 12,
+  color: "white",
+};
 
   /* ================= TIME ================= */
 
@@ -171,7 +181,9 @@ addNgoRequest({
               </View>
 
               <View style={{ flex: 1, backgroundColor: "#1e293b", padding: 16, borderRadius: 12, alignItems: "center" }}>
-                <Text style={{ color: "white", fontSize: 20 }}>1</Text>
+                <Text style={{ color: "white", fontSize: 20 }}>
+  {collectedCount}
+</Text>
                 <Text style={{ color: "#94a3b8" }}>Colectate</Text>
               </View>
             </View>
@@ -454,17 +466,175 @@ addNgoRequest({
 
         {/* PROFILE */}
         {tab === "profile" && (
-          <Pressable style={{
-            backgroundColor: "#1e293b",
-            padding: 14,
-            borderRadius: 10,
-            marginTop: 16,
-          }}>
-            <Text style={{ color: "white" }}>
-              Informații factură
-            </Text>
-          </Pressable>
-        )}
+  <>
+    {/* TITLE */}
+    <Text style={{ color: "white", fontSize: 22, fontWeight: "600", marginTop: 16 }}>
+      Profil
+    </Text>
+
+    {/* PROFILE CARD */}
+    <View style={{
+      backgroundColor: "#1e293b",
+      borderRadius: 14,
+      padding: 16,
+      marginTop: 16,
+    }}>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+        {/* Avatar */}
+        <View style={{
+          width: 50,
+          height: 50,
+          borderRadius: 25,
+          backgroundColor: "#334155",
+          alignItems: "center",
+          justifyContent: "center",
+        }}>
+          <Text style={{ color: "#22c55e", fontSize: 20 }}>👤</Text>
+        </View>
+
+        {/* Info */}
+        <View>
+          <Text style={{ color: "white", fontWeight: "600" }}>As</Text>
+          <Text style={{ color: "#94a3b8", fontSize: 12 }}>NGO</Text>
+          <Text style={{ color: "#94a3b8", fontSize: 12 }}>as@gmail.com</Text>
+          <Text style={{ color: "#94a3b8", fontSize: 12 }}>București</Text>
+        </View>
+      </View>
+    </View>
+
+    {/* FACTURA */}
+    <Pressable
+      onPress={() => setTab("factura")}
+      style={{
+        backgroundColor: "#1e293b",
+        borderRadius: 12,
+        padding: 14,
+        marginTop: 16,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
+      <View>
+        <Text style={{ color: "white", fontWeight: "500" }}>
+          Informații factură
+        </Text>
+
+        <Text style={{ color: "#94a3b8", fontSize: 12 }}>
+          {factura ? "Completat" : "Necompletat"}
+        </Text>
+      </View>
+
+      <Text style={{ color: "#94a3b8" }}>›</Text>
+    </Pressable>
+
+    {/* CHANGE ACCOUNT */}
+    <Pressable style={{
+      backgroundColor: "#1e293b",
+      padding: 14,
+      borderRadius: 10,
+      marginTop: 16,
+      alignItems: "center",
+    }}>
+      <Text style={{ color: "white" }}>
+        Schimbă contul
+      </Text>
+    </Pressable>
+
+    {/* LOGOUT */}
+    <Pressable style={{
+      backgroundColor: "#1e293b",
+      padding: 14,
+      borderRadius: 10,
+      marginTop: 10,
+      alignItems: "center",
+    }}>
+      <Text style={{ color: "#ef4444" }}>
+        Deconectare
+      </Text>
+    </Pressable>
+  </>
+)}
+{tab === "factura" && (
+  <>
+    <Pressable onPress={() => setTab("profile")}>
+      <Text style={{ color: "#22c55e", marginTop: 16 }}>
+        ← Înapoi
+      </Text>
+    </Pressable>
+
+    <Text style={{ color: "white", fontSize: 22, fontWeight: "600", marginTop: 16 }}>
+      Informații factură
+    </Text>
+
+    <TextInput
+  placeholder="Nume"
+  placeholderTextColor="#94a3b8"
+  style={inputStyle}
+  value={factura?.name || ""}
+  onChangeText={(text) =>
+    setFactura({
+      ...(factura || {}),
+      name: text,
+    })
+  }
+/>
+
+    <TextInput
+  placeholder="Adresă"
+  placeholderTextColor="#94a3b8"
+  style={inputStyle}
+  value={factura?.address || ""}
+  onChangeText={(text) =>
+    setFactura({
+      ...(factura || {}),
+      address: text,
+    })
+  }
+/>
+
+    <TextInput
+  placeholder="Oraș"
+  placeholderTextColor="#94a3b8"
+  style={inputStyle}
+  value={factura?.city || ""}
+  onChangeText={(text) =>
+    setFactura({
+      ...(factura || {}),
+      city: text,
+    })
+  }
+/>
+
+    <TextInput
+  placeholder="Telefon"
+  placeholderTextColor="#94a3b8"
+  style={inputStyle}
+  value={factura?.phone || ""}
+  onChangeText={(text) =>
+    setFactura({
+      ...(factura || {}),
+      phone: text,
+    })
+  }
+/>
+
+    <Pressable
+      onPress={() => setTab("profile")}
+      style={{
+        backgroundColor: "#22c55e",
+        padding: 14,
+        borderRadius: 12,
+        marginTop: 16,
+        alignItems: "center",
+      }}
+    >
+      <Text style={{ color: "white", fontWeight: "600" }}>
+        Salvează
+      </Text>
+    </Pressable>
+  </>
+)}
 
       </ScrollView>
 
@@ -476,19 +646,28 @@ addNgoRequest({
         borderTopWidth: 1,
         borderColor: "#1e293b",
       }}>
-        {["Home", "Cereri", "Profil"].map((t) => (
-          <Pressable key={t} onPress={() => {
-  setTab(t.toLowerCase());
-  setSelectedOffer(null);
-setIsRequesting(false);// ✅ prevents blank screen bug
-}}>
-            <Text style={{
-              color: tab === t.toLowerCase() ? "#22c55e" : "#94a3b8",
-            }}>
-              {t}
-            </Text>
-          </Pressable>
-        ))}
+        {[
+  { key: "home", label: "Home" },
+  { key: "cereri", label: "Cereri" },
+  { key: "profile", label: "Profil" },
+].map((t) => (
+  <Pressable
+    key={t.key}
+    onPress={() => {
+      setTab(t.key);
+      setSelectedOffer(null);
+      setIsRequesting(false);
+    }}
+  >
+    <Text
+      style={{
+        color: tab === t.key ? "#22c55e" : "#94a3b8",
+      }}
+    >
+      {t.label}
+    </Text>
+  </Pressable>
+))}
       </View>
 
       {/* TOAST */}
