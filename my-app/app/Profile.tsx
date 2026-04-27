@@ -38,12 +38,12 @@ export default function Profile() {
     setEditing(false);
   };
 
-  // ================= STATS =================
+  // ================= stats =================
 
   const totalOrders = orders.length;
   const totalDonations = donations.length;
 
-  // ⭐ progress bar (100 pts = full)
+  // progress bar (100 pts = full,bar
   const progress = Math.min(points / 100, 1);
 
   // ================= UI =================
@@ -60,7 +60,7 @@ export default function Profile() {
       {/* TITLE */}
       <Text style={title}>Profil</Text>
 
-      {/* ================= PROFILE CARD ================= */}
+      {/* ================= profile card ================= */}
       <View style={card}>
         {editing ? (
           <>
@@ -119,13 +119,13 @@ export default function Profile() {
         )}
       </View>
 
-      {/* ================= REWARDS ================= */}
+      {/* ================= reward system ================= */}
       <View style={card}>
         <Text style={{ color: "white", marginBottom: 10 }}>
           Puncte de recompensă
         </Text>
 
-        {/* ⭐ POINTS */}
+        {/*  POINTS */}
         <Text
           style={{
             color: "#22c55e",
@@ -137,7 +137,7 @@ export default function Profile() {
           {points} puncte
         </Text>
 
-        {/* 📊 PROGRESS BAR */}
+        {/* progress BAR */}
         <View
           style={{
             height: 6,
@@ -173,7 +173,7 @@ export default function Profile() {
         </View>
       </View>
 
-      {/* ================= MENU ================= */}
+      {/* ================= menu ================= */}
 
       <MenuItem
         title="🎁 Magazin Recompense"

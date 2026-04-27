@@ -20,7 +20,7 @@ export default function Reserve() {
         paddingBottom: 40,
       }}
     >
-      {/* 🔴 TEST (REMOVE AFTER CONFIRMING) */}
+      
       <Text style={{ color: "red", fontSize: 18, marginBottom: 10 }}>
         RESERVE SCREEN ACTIVE
       </Text>
@@ -28,7 +28,7 @@ export default function Reserve() {
       {/* BACK */}
       <BackButton />
 
-      {/* IMAGE */}
+      {/* image */}
       <Image
         source={{ uri: parsedItem.image }}
         style={{
@@ -39,22 +39,22 @@ export default function Reserve() {
         }}
       />
 
-      {/* TITLE */}
+      {/* title */}
       <Text style={{ color: "white", fontSize: 22, marginBottom: 6 }}>
         {parsedItem.title}
       </Text>
 
-      {/* PRICE */}
+      {/* price */}
       <Text style={{ color: "#22c55e", fontSize: 18, marginBottom: 10 }}>
         {parsedItem.price} RON
       </Text>
 
-      {/* DESCRIPTION */}
+      {/* descript */}
       <Text style={{ color: "#94a3b8", marginBottom: 20 }}>
         {parsedItem.description}
       </Text>
 
-      {/* ================= BUY ================= */}
+      {/* ============== BUY ============= */}
       <Pressable
         onPress={() =>
           router.push({

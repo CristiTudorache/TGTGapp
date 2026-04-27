@@ -364,9 +364,9 @@ useEffect(() => {
     setAppTime(now.getHours() * 60 + now.getMinutes());
   };
 
-  updateTime(); // ✅ run instantly on mount
+  updateTime(); //  run instantly on mount
 
-  const interval = setInterval(updateTime, 1000); // ✅ every second
+  const interval = setInterval(updateTime, 1000); //  every second
 
   return () => clearInterval(interval);
 }, []);
@@ -375,7 +375,7 @@ useEffect(() => {
 
   const latest = notifications[0];
 
-  // ✅ prevent repeat toast
+  //  prevent repeat toast
   if (latest.id !== lastSeenNotificationId) {
     setLastNotification(latest);
     setLastSeenNotificationId(latest.id);
@@ -435,16 +435,16 @@ const formatTime = (hour: number) => {
   const Card = ({ item }: any) => {
   const now = appTime;
 
-// ✅ minutes since midnight resets automatically at 00:00
+//  minutes since midnight resets automatically at 00:00
 const end = item.pickupEnd ? item.pickupEnd * 60 : null;
 
-// ✅ ONLY rule: closed if past pickupEnd
+//   rule: closed if past pickupEnd
 const isClosed = end !== null && now >= end;
 
   return (
     <Pressable
       onPress={() => {
-  setPreviousTab(tab);   // ✅ SAVE WHERE YOU CAME FROM
+  setPreviousTab(tab);   // saves where i came from
   setSelectedProduct(item);
   setTab("product");
 }}
@@ -493,7 +493,7 @@ const isClosed = end !== null && now >= end;
               </Text>
           )}
 
-          {/* ✅ STATUS */}
+          {/*  STATUS */}
           <Text style={{ color: isClosed ? "#ef4444" : "#22c55e" }}>
             {isClosed ? "Închis" : "Deschis"}
           </Text>
@@ -501,8 +501,8 @@ const isClosed = end !== null && now >= end;
 
         <Pressable
   onPress={(e) => {
-    e.stopPropagation(); // ✅ prevents navigation
-    toggleFavorite(item.id); // ✅ favorites instead
+    e.stopPropagation(); // prevents navigation
+    toggleFavorite(item.id); // favorites instead
   }}
 >
   <Text>
@@ -703,14 +703,14 @@ const historyOrders = orders.filter(
         )}
         {tab === "product" && selectedProduct && (
   <>
-    {/* BACK BUTTON */}
+    {/* back button */}
     <Pressable onPress={() => setTab(previousTab)}>
       <Text style={{ color: "#22c55e", marginBottom: 10 }}>
         ← Înapoi
       </Text>
     </Pressable>
 
-    {/* IMAGE */}
+    {/* image */}
     <Image
       source={{ uri: selectedProduct.image }}
       style={{
@@ -721,7 +721,7 @@ const historyOrders = orders.filter(
       }}
     />
 
-    {/* INFO */}
+    {/* info */}
     <Text style={{ color: "white", fontSize: 20 }}>
       {selectedProduct.title}
     </Text>
@@ -738,7 +738,7 @@ const historyOrders = orders.filter(
       📍 {selectedProduct.distance}
     </Text>
 
-    {/* ALLERGENS */}
+    {/* allergens */}
     {selectedProduct.allergens && (
       <Text style={{ color: "#94a3b8", marginTop: 6 }}>
         Alergeni: {selectedProduct.allergens.join(", ")}
@@ -827,7 +827,7 @@ const historyOrders = orders.filter(
 
   </>
 )}
-        {/* ✅ UPDATED FAVORITES */}
+        {/* FAVORITES */}
         {tab === "favorites" && (
           <>
             <Text style={{ color: "white", fontSize: 22, fontWeight: "bold", marginBottom: 4 }}>
@@ -886,7 +886,7 @@ const historyOrders = orders.filter(
         )}
 {tab === "notifications" && (
   <>
-    {/* ✅ BACK BUTTON */}
+    {/* back button */}
     <Pressable onPress={() => setTab("home")}>
       <Text style={{ color: "#22c55e", marginBottom: 10 }}>
         ← Înapoi
@@ -938,7 +938,7 @@ const historyOrders = orders.filter(
     </Pressable>
   </>
 )}
-        {/* ✅ UPDATED ORDERS */}
+        {/* updated orders */}
         {tab === "orders" && (
   <>
     <Text style={{ color: "white", fontSize: 22, fontWeight: "bold", marginBottom: 4 }}>
@@ -981,7 +981,7 @@ const historyOrders = orders.filter(
             }[order.status]}
           </Text>
 
-          {/* ✅ READY ACTIONS */}
+          {/* actions for read; ready actions */}
           {order.status === "ready" && (
             <>
               <Pressable
@@ -1060,13 +1060,13 @@ const historyOrders = orders.filter(
             {order.status === "missed" && (
   <View style={{ marginTop: 10 }}>
 
-    {/* WARNING */}
+    {/* warning */}
     <Text style={{ color: "#f87171", marginBottom: 6 }}>
       Comanda nu a fost ridicată la timp.  
       Poți depune o contestație doar în cazuri serioase.
     </Text>
 
-    {/* TOGGLE BUTTON */}
+    {/* toggle button */}
     {!order.contested && (
       <Pressable
         onPress={() =>
@@ -1085,7 +1085,7 @@ const historyOrders = orders.filter(
       </Pressable>
     )}
 
-    {/* INPUT UI */}
+    {/* input UI */}
     {contestOpen === order.id && (
       <View style={{ marginTop: 6 }}>
 
@@ -1145,10 +1145,10 @@ const historyOrders = orders.filter(
   </View>
 )}
 
-            {/* ONLY IF COMPLETED */}
+            {/* only if completed */}
             {order.status === "completed" && (
               <View style={{ marginTop: 8 }}>
-                {/* REVIEW BUTTON */}
+                {/* review button */}
 <Pressable
   onPress={() =>
     setReviewOpen(reviewOpen === order.id ? null : order.id)
@@ -1273,7 +1273,7 @@ const historyOrders = orders.filter(
   setTab(newTab);
 
   if (newTab === "orders") {
-    markAllRead(); // ✅ clears red dot
+    markAllRead(); // clears red dot
   }
 }}>
   <View>
@@ -1334,7 +1334,7 @@ const historyOrders = orders.filter(
   </Text>
 </Pressable>
 
-      {/* 👇 ADD THIS */}
+      
       <Pressable
         onPress={() => setClubModal(false)}
         style={{

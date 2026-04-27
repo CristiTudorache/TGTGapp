@@ -28,7 +28,7 @@ export default function Index() {
           opacity: visible ? 1 : 0,
         }}
       >
-        {/* ✅ REPLACED ICON WITH LOGO */}
+        {/* replaced icon with logo*/}
         <View
           style={{
             width: 80,

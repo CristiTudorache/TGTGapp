@@ -8,7 +8,7 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // ✅ better email validation
+  // way better email validation
   const validateEmail = (email: string) => {
     return /\S+@\S+\.\S+/.test(email);
   };
@@ -28,7 +28,7 @@ export default function Signup() {
 
       <View style={{ flex: 1 }}>
 
-        {/* LOGO */}
+        {/* logo */}
         <View style={{ alignItems: "center", marginBottom: 30 }}>
           <Image
             source={require("../assets/images/logo.png")}
@@ -54,7 +54,7 @@ export default function Signup() {
         </Text>
 
         <View style={{ gap: 16 }}>
-          {/* EMAIL */}
+          {/* email */}
           <View>
             <Text style={{ color: "#94a3b8", marginBottom: 6 }}>Email</Text>
             <TextInput
@@ -72,7 +72,7 @@ export default function Signup() {
             />
           </View>
 
-          {/* PASSWORD */}
+          {/* password */}
           <View>
             <Text style={{ color: "#94a3b8", marginBottom: 6 }}>Password</Text>
             <TextInput

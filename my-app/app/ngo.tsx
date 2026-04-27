@@ -59,7 +59,7 @@ const offers = [
 
 export default function NGO() {
 
-  const [tab, setTab] = useState("register"); // start here
+  const [tab, setTab] = useState("register"); 
 const [isVerified, setIsVerified] = useState(false);
 const { ngoRequests, addNgoRequest, notifications, factura, setFactura } = useApp();
   const [selectedOffer, setSelectedOffer] = useState<any>(null);
@@ -157,7 +157,7 @@ addNgoRequest({
   qty,
 });
 
-// ⏱ simulate approval after 10 sec
+// simulate approval after 10 sec
 
     setToast({
   visible: true,
@@ -183,7 +183,7 @@ addNgoRequest({
           FoodLink
         </Text>
 
-        {/* VERIFICATION */}
+        {/* verification */}
         <View style={{
           backgroundColor: "#78350f",
           padding: 12,
@@ -313,7 +313,7 @@ addNgoRequest({
           </>
           
         )}
-        {/* ================= OFFER DETAIL ================= */}
+        {/* ================= OFFER details ================= */}
 {tab === "home" && selectedOffer && !isRequesting && (
   <>
     <Pressable onPress={() => setSelectedOffer(null)}>
@@ -339,7 +339,7 @@ addNgoRequest({
       {selectedOffer.distance} • Qty: {selectedOffer.qty}
     </Text>
 
-    {/* ✅ THIS is your "order" button */}
+    {/* order button */}
     <Pressable
   onPress={() => setIsRequesting(true)}
       style={{
@@ -356,7 +356,7 @@ addNgoRequest({
     </Pressable>
   </>
 )}
-{/* ================= REQUEST SCREEN ================= */}
+{/* ================= screen for request ================= */}
 {tab === "home" && selectedOffer && isRequesting && (
   <>
     <Pressable onPress={() => setIsRequesting(false)}>
@@ -423,7 +423,7 @@ addNgoRequest({
   </>
 )}
 
-        {/* ================= CERERI ================= */}
+        {/* ================= cereri ================= */}
         {tab === "cereri" && isVerified && (
           <>
             <Text style={{ color: "white", fontSize: 22, fontWeight: "600", marginTop: 16 }}>
@@ -511,7 +511,7 @@ addNgoRequest({
               </Text>
             </Pressable>
 
-            {/* CERERILE TALE */}
+            {/* cererile tale  */}
             <Text style={{ color: "#94a3b8", marginTop: 24 }}>
               CERERILE TALE
             </Text>
@@ -573,7 +573,7 @@ addNgoRequest({
       marginTop: 16,
     }}>
       <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-        {/* Avatar */}
+        {/* avator */}
         <View style={{
           width: 50,
           height: 50,
@@ -746,7 +746,7 @@ addNgoRequest({
 
       </ScrollView>
 
-      {/* NAV */}
+      {/* nav */}
 {isVerified && (
   <View
     style={{
@@ -798,7 +798,7 @@ addNgoRequest({
   </View>
 )}
 
-      {/* TOAST */}
+      {/* toast popups */}
       {toast.visible && (
   <Toast
     title={toast.title}

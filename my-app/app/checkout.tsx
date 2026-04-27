@@ -17,7 +17,7 @@ export default function Checkout() {
 
   const parsedItem = item ? JSON.parse(item as string) : null;
 
-  // ✅ ONLY ADD: addNotification
+  // addNotification
   const {
     addOrder,
     addCard,
@@ -93,7 +93,7 @@ export default function Checkout() {
       date: Date.now(),
     });
 
-    // ⭐ ADD POINTS (1 RON = 1 point)
+    //  points (1 leu = 1 point)
     if (parsedItem.price) {
       const priceNumber = Math.round(
         parseFloat(parsedItem.price.replace(",", "."))

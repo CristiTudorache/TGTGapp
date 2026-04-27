@@ -51,12 +51,12 @@ type Notification = {
   read: boolean;
 };
 
-/* ================= CONTEXT TYPE ================= */
+/*  CONTEXT TYPE  */
 
 type AppContextType = {
   ngoRequests: any[];
   addNgoRequest: (req: any) => void;
-  updateNgoRequest: (id: string, status: string) => void; // ✅ NEW
+  updateNgoRequest: (id: string, status: string) => void; 
 
   factura: Factura | null;
   setFactura: (f: Factura) => void;
@@ -110,7 +110,7 @@ export const AppProvider = ({ children }: any) => {
 
     setNgoRequests((prev) => [newRequest, ...prev]);
 
-    // ⏱ auto accept after 10 seconds
+    // auto accept after 10 seconds
     setTimeout(() => {
   updateNgoRequest(newRequest.id, "accepted");
 
@@ -131,7 +131,7 @@ export const AppProvider = ({ children }: any) => {
     );
   };
 
-  /* ---------- NOTIFICATIONS ---------- */
+  /* ----- NOTIFICATIONS ----- */
 
   const addNotification = (n: Notification) => {
     setNotifications((prev) => [n, ...prev]);
@@ -143,7 +143,7 @@ export const AppProvider = ({ children }: any) => {
     );
   };
 
-  /* ---------- CARDS ---------- */
+  /*  CARDS  */
 
   const addCard = (card: Card) => {
     setCards((prev) => [...prev, card]);
@@ -153,7 +153,7 @@ export const AppProvider = ({ children }: any) => {
     setCards((prev) => prev.filter((c) => c.id !== id));
   };
 
-  /* ---------- ORDERS ---------- */
+  /*  ORDERS  */
 
   const addOrder = (order: any) => {
     const newOrder: Order = {
@@ -193,7 +193,7 @@ export const AppProvider = ({ children }: any) => {
     );
   };
 
-  /* ================= CONTESTATIE ================= */
+  /*  CONTESTATIE  */
 
   const applyContestatie = (id: string, reason: string) => {
     const order = orders.find((o) => o.id === id);
@@ -248,7 +248,7 @@ export const AppProvider = ({ children }: any) => {
     }, 10000);
   };
 
-  /* 🔥 AUTO PROGRESSION */
+  /*  AUTO PROGRESSION */
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -292,7 +292,7 @@ export const AppProvider = ({ children }: any) => {
     return () => clearInterval(interval);
   }, []);
 
-  /* ---------- DONATIONS ---------- */
+  /* ----- DONATIONS ----- */
 
   const addDonation = (donation: Donation) => {
     setDonations((prev) => [donation, ...prev]);
@@ -305,7 +305,7 @@ export const AppProvider = ({ children }: any) => {
     });
   };
 
-  /* ---------- POINTS ---------- */
+  /* ---- POINTS ---- */
 
   const addPoints = (amount: number) => {
     setPoints((prev) => prev + amount);
@@ -345,7 +345,7 @@ export const AppProvider = ({ children }: any) => {
         markAllRead,
         ngoRequests,
         addNgoRequest,
-        updateNgoRequest, // ✅ NEW
+        updateNgoRequest, 
       }}
     >
       {children}

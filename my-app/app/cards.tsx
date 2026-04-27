@@ -40,7 +40,7 @@ export default function Cards() {
       <ScrollView
         contentContainerStyle={{
           padding: 16,
-          paddingTop: 10, // ✅ FIX (NOT 40)
+          paddingTop: 10,
           paddingBottom: 40,
         }}
       >

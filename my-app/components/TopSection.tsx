@@ -30,7 +30,7 @@ export default function TopSection() {
   return (
     <View
       style={{
-        marginTop: 10,          // ✅ THIS fixes "too high"
+        marginTop: 10,  //not too high in dynamic island anymore
         marginBottom: 16,
       }}
     >

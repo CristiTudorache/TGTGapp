@@ -86,7 +86,7 @@ export default function ParallaxScrollView({
   );
 }
 
-/* ================= STYLES ================= */
+/*  STYLES  */
 
 const styles: any = StyleSheet.create({
   header: {

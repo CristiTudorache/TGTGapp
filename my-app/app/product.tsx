@@ -73,7 +73,7 @@ export default function Product() {
             pathname: "/checkout",
             params: {
               item: JSON.stringify(parsedItem),
-              donation: "true", // 🔥 THIS IS THE KEY
+              donation: "true", 
             },
           })
         }

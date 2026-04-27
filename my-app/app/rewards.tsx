@@ -70,7 +70,7 @@ const rewards = [
 export default function Rewards() {
   const router = useRouter();
 
-  // ✅ ONLY CHANGE: added addNotification
+  //add addNotification
   const { points, usePoints, addOrder, addNotification } = useApp();
 
   const handleBuy = (item: any) => {

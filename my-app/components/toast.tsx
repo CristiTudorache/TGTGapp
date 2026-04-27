@@ -11,8 +11,8 @@ export default function Toast({ title, message }: any) {
         backgroundColor: "#22c55e",
         padding: 14,
         borderRadius: 12,
-        zIndex: 9999, // 🔥 IMPORTANT
-        elevation: 10, // Android fix
+        zIndex: 9999,
+        elevation: 10, 
       }}
     >
       <Text style={{ color: "white", fontWeight: "bold" }}>

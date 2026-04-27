@@ -9,14 +9,13 @@ import { useState } from "react";
 import { useApp } from "../context/AppContext";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import BackButton from "../components/BackButton";
-import { SafeAreaView } from "react-native-safe-area-context"; // ✅ ADD THIS
+import { SafeAreaView } from "react-native-safe-area-context"; 
 
 export default function Facturi() {
   const { factura, setFactura } = useApp();
   const router = useRouter();
   const { item } = useLocalSearchParams();
 
-  // ✅ SAFE DEFAULTS
   const [name, setName] = useState<string>(factura?.name ?? "");
   const [company, setCompany] = useState<string>(factura?.company ?? "");
   const [cui, setCui] = useState<string>(factura?.cui ?? "");
@@ -61,7 +60,7 @@ export default function Facturi() {
           paddingBottom: 40,
         }}
       >
-        {/* ✅ BACK BUTTON NOW SAFE */}
+        {/* back button*/}
         <BackButton />
 
         <Text

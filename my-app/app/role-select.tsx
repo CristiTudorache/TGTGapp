@@ -35,7 +35,7 @@ export default function RoleSelect() {
     }
 
     if (role === "ngo") {
-      router.push("/ngo" as any); // your NGO flow
+      router.push("/ngo" as any); //  ngo flow
     }
   };
 

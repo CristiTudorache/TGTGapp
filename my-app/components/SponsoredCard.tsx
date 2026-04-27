@@ -29,7 +29,7 @@ export default function SponsoredCard({ item, toggleFavorite, favorites }: any) 
           ⭐ {item.rating}
         </Text>
 
-        {/* ❤️ FAVORITE BUTTON */}
+        {/*  button favorite */}
         <Pressable
           onPress={() => toggleFavorite(item.id)}
           style={{ marginTop: 8 }}
