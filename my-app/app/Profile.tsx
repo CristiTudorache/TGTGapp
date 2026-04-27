@@ -194,9 +194,12 @@ export default function Profile() {
       />
 
       {/* LOGOUT */}
-      <Pressable style={logout}>
-        <Text style={logoutText}>Deconectare</Text>
-      </Pressable>
+      <Pressable
+  onPress={() => router.replace("/")}
+  style={logout}
+>
+  <Text style={logoutText}>Deconectare</Text>
+</Pressable>
     </ScrollView>
   );
 }

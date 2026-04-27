@@ -10,6 +10,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useApp } from "../context/AppContext";
 import Toast from "../components/toast";
+import { useRouter } from "expo-router";
 
 /* ================= OFFERS ================= */
 
@@ -65,6 +66,7 @@ const { ngoRequests, addNgoRequest, notifications, factura, setFactura } = useAp
   const [isRequesting, setIsRequesting] = useState(false);
   const [message, setMessage] = useState("");
   const [qty, setQty] = useState("");
+  const router = useRouter();
   const [toast, setToast] = useState({
   visible: false,
   title: "",
@@ -608,31 +610,33 @@ addNgoRequest({
 </View>
     </Pressable>
 
-    {/* CHANGE ACCOUNT */}
-    <Pressable style={{
-      backgroundColor: "#1e293b",
-      padding: 14,
-      borderRadius: 10,
-      marginTop: 16,
-      alignItems: "center",
-    }}>
-      <Text style={{ color: "white" }}>
-        Schimbă contul
-      </Text>
-    </Pressable>
+    
 
     {/* LOGOUT */}
-    <Pressable style={{
-      backgroundColor: "#1e293b",
-      padding: 14,
-      borderRadius: 10,
-      marginTop: 10,
-      alignItems: "center",
-    }}>
-      <Text style={{ color: "#ef4444" }}>
-        Deconectare
-      </Text>
-    </Pressable>
+    <Pressable
+  onPress={() => {
+    setIsVerified(false);
+    setTab("register");
+    router.replace("/");
+  }}
+  style={{
+    marginTop: 20,
+    padding: 14,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#ef4444",
+  }}
+>
+  <Text
+    style={{
+      color: "#ef4444",
+      textAlign: "center",
+      fontWeight: "bold",
+    }}
+  >
+    Deconectare
+  </Text>
+</Pressable>
   </>
 )}
 {tab === "factura" && (
