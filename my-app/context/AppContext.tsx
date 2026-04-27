@@ -54,6 +54,8 @@ type Notification = {
 /*  CONTEXT TYPE  */
 
 type AppContextType = {
+    producerItems: any[];
+addProducerItem: (item: any) => void;
   ngoRequests: any[];
   addNgoRequest: (req: any) => void;
   updateNgoRequest: (id: string, status: string) => void; 
@@ -98,7 +100,7 @@ export const AppProvider = ({ children }: any) => {
   const [points, setPoints] = useState(0);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [ngoRequests, setNgoRequests] = useState<any[]>([]);
-
+const [producerItems, setProducerItems] = useState<any[]>([]);
   /* ================= NGO ================= */
 
   const addNgoRequest = (req: any) => {
@@ -325,6 +327,22 @@ export const AppProvider = ({ children }: any) => {
   return (
     <AppContext.Provider
       value={{
+        producerItems,
+addProducerItem: (item: any) => {
+  const newItem = {
+    id: Date.now().toString(),
+    ...item,
+  };
+
+  setProducerItems((prev) => [newItem, ...prev]);
+
+  addNotification({
+    id: Date.now().toString(),
+    title: "Anunț creat 🎉",
+    message: item.title,
+    read: false,
+  });
+},
         factura,
         setFactura,
         cards,

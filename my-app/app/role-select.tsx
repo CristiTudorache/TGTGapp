@@ -31,7 +31,7 @@ export default function RoleSelect() {
     }
 
     if (role === "producer") {
-      router.push("/producer" as any); // placeholder screen
+      router.push("/producer") // placeholder screen
     }
 
     if (role === "ngo") {
