@@ -58,14 +58,25 @@ const offers = [
 
 export default function NGO() {
 
-  const [tab, setTab] = useState("home");
+  const [tab, setTab] = useState("register"); // start here
+const [isVerified, setIsVerified] = useState(false);
 const { ngoRequests, addNgoRequest, notifications, factura, setFactura } = useApp();
   const [selectedOffer, setSelectedOffer] = useState<any>(null);
   const [isRequesting, setIsRequesting] = useState(false);
   const [message, setMessage] = useState("");
   const [qty, setQty] = useState("");
-  const [toast, setToast] = useState(false);
+  const [toast, setToast] = useState({
+  visible: false,
+  title: "",
+  message: "",
+});
   const [category, setCategory] = useState("Alimentar");
+  const isFacturaComplete =
+  factura &&
+  factura.name &&
+  factura.address &&
+  factura.city &&
+  factura.phone;
   const collectedCount = ngoRequests.filter(
   (r) => r.status === "accepted"
 ).length;
@@ -99,11 +110,15 @@ useEffect(() => {
     last.title === "Cerere acceptată 🎉" &&
     !shownIds.includes(last.id)
   ) {
-    setToast(true);
+    setToast({
+  visible: true,
+  title: "Cerere acceptată 🎉",
+  message: "Poți colecta produsele",
+});
 
     setShownIds((prev) => [...prev, last.id]);
 
-    setTimeout(() => setToast(false), 2500);
+    setTimeout(() => setToast({ visible: false, title: "", message: "" }), 2500);
   }
 }, [notifications]);
 
@@ -136,11 +151,15 @@ addNgoRequest({
 
 // ⏱ simulate approval after 10 sec
 
-    setToast(true);
+    setToast({
+  visible: true,
+  title: "Cerere trimisă!",
+  message: "Producătorul va fi notificat",
+});
     setMessage("");
     setQty("");
 
-    setTimeout(() => setToast(false), 2500);
+    setTimeout(() => setToast({ visible: false, title: "", message: "" }), 2500);
   };
 
   return (
@@ -170,9 +189,57 @@ addNgoRequest({
             Contul tău este în curs de verificare.
           </Text>
         </View>
+        {tab === "register" && !isVerified && (
+  <>
+    <Text style={{ color: "white", fontSize: 22, fontWeight: "600", marginTop: 16 }}>
+      Înregistrare ONG
+    </Text>
 
+    <TextInput
+      placeholder="Nume organizație"
+      placeholderTextColor="#94a3b8"
+      style={inputStyle}
+    />
+
+    <TextInput
+      placeholder="Email"
+      placeholderTextColor="#94a3b8"
+      style={inputStyle}
+    />
+
+    <TextInput
+      placeholder="Telefon"
+      placeholderTextColor="#94a3b8"
+      style={inputStyle}
+    />
+
+    <TextInput
+      placeholder="Adresă"
+      placeholderTextColor="#94a3b8"
+      style={inputStyle}
+    />
+
+    <Pressable
+      onPress={() => {
+        setIsVerified(true);
+        setTab("home");
+      }}
+      style={{
+        backgroundColor: "#22c55e",
+        padding: 14,
+        borderRadius: 12,
+        marginTop: 20,
+        alignItems: "center",
+      }}
+    >
+      <Text style={{ color: "white", fontWeight: "600" }}>
+        Trimite pentru verificare
+      </Text>
+    </Pressable>
+  </>
+)}
         {/* ================= HOME ================= */}
-        {tab === "home" && !selectedOffer && (
+        {tab === "home" && isVerified && !selectedOffer && (
           <>
             <View style={{ flexDirection: "row", gap: 10, marginTop: 16 }}>
               <View style={{ flex: 1, backgroundColor: "#1e293b", padding: 16, borderRadius: 12, alignItems: "center" }}>
@@ -331,7 +398,7 @@ addNgoRequest({
 )}
 
         {/* ================= CERERI ================= */}
-        {tab === "cereri" && (
+        {tab === "cereri" && isVerified && (
           <>
             <Text style={{ color: "white", fontSize: 22, fontWeight: "600", marginTop: 16 }}>
               Solicită mâncare gratuită
@@ -344,7 +411,7 @@ addNgoRequest({
             <Text style={{ color: "#94a3b8" }}>Categorie</Text>
 
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 8 }}>
-              {["Pizza", "Panificație", "Alimentar", "Restaurant", "Fermier"].map((c) => (
+              {["Băuturi", "Panificație", "Produse alimentare", "Restaurant", "Fermier"].map((c) => (
                 <Pressable
                   key={c}
                   onPress={() => setCategory(c)}
@@ -465,7 +532,7 @@ addNgoRequest({
         )}
 
         {/* PROFILE */}
-        {tab === "profile" && (
+        {tab === "profile" && isVerified && (
   <>
     {/* TITLE */}
     <Text style={{ color: "white", fontSize: 22, fontWeight: "600", marginTop: 16 }}>
@@ -521,11 +588,24 @@ addNgoRequest({
         </Text>
 
         <Text style={{ color: "#94a3b8", fontSize: 12 }}>
-          {factura ? "Completat" : "Necompletat"}
+          {isFacturaComplete ? "Completat" : "Necompletat"}
         </Text>
       </View>
 
-      <Text style={{ color: "#94a3b8" }}>›</Text>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+  {!isFacturaComplete && (
+    <View
+      style={{
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: "#ef4444",
+      }}
+    />
+  )}
+
+  <Text style={{ color: "#94a3b8" }}>›</Text>
+</View>
     </Pressable>
 
     {/* CHANGE ACCOUNT */}
@@ -639,44 +719,64 @@ addNgoRequest({
       </ScrollView>
 
       {/* NAV */}
-      <View style={{
-        flexDirection: "row",
-        justifyContent: "space-around",
-        padding: 12,
-        borderTopWidth: 1,
-        borderColor: "#1e293b",
-      }}>
-        {[
-  { key: "home", label: "Home" },
-  { key: "cereri", label: "Cereri" },
-  { key: "profile", label: "Profil" },
-].map((t) => (
-  <Pressable
-    key={t.key}
-    onPress={() => {
-      setTab(t.key);
-      setSelectedOffer(null);
-      setIsRequesting(false);
+{isVerified && (
+  <View
+    style={{
+      flexDirection: "row",
+      justifyContent: "space-around",
+      padding: 12,
+      borderTopWidth: 1,
+      borderColor: "#1e293b",
     }}
   >
-    <Text
+    {[
+      { key: "home", label: "Home" },
+      { key: "cereri", label: "Cereri" },
+      { key: "profile", label: "Profil" },
+    ].map((t) => (
+      <Pressable
+        key={t.key}
+        onPress={() => {
+          setTab(t.key);
+          setSelectedOffer(null);
+          setIsRequesting(false);
+        }}
+      >
+        <View style={{ alignItems: "center", position: "relative" }}>
+  <Text
+    style={{
+      color: tab === t.key ? "#22c55e" : "#94a3b8",
+    }}
+  >
+    {t.label}
+  </Text>
+
+  {t.key === "profile" && !isFacturaComplete && (
+    <View
       style={{
-        color: tab === t.key ? "#22c55e" : "#94a3b8",
+        position: "absolute",
+        top: -2,
+        right: -10,
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: "#ef4444",
       }}
-    >
-      {t.label}
-    </Text>
-  </Pressable>
-))}
-      </View>
+    />
+  )}
+</View>
+      </Pressable>
+    ))}
+  </View>
+)}
 
       {/* TOAST */}
-      {toast && (
-        <Toast
-          title="Cerere trimisă!"
-          message="Producătorul va fi notificat"
-        />
-      )}
+      {toast.visible && (
+  <Toast
+    title={toast.title}
+    message={toast.message}
+  />
+)}
     </SafeAreaView>
   );
 }
