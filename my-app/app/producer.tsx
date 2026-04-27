@@ -25,6 +25,7 @@ const validateEmail = (email: string) => {
 };
 
   const [items, setItems] = useState<any[]>([]);
+  const [requests, setRequests] = useState<any[]>([]);
   const [isBillingDone, setIsBillingDone] = useState(false);
   const [billingName, setBillingName] = useState("");
 const [billingId, setBillingId] = useState("");
@@ -67,6 +68,21 @@ const [billingAddress, setBillingAddress] = useState("");
 
     return () => clearInterval(interval);
   }, []);
+  useEffect(() => {
+  if (items.length === 0) return;
+
+  let intervalTime = 20000;
+
+  if (items.length === 1) intervalTime = 20000;
+  else if (items.length === 2) intervalTime = 17500;
+  else intervalTime = 15000;
+
+  const interval = setInterval(() => {
+    generateRequest();
+  }, intervalTime);
+
+  return () => clearInterval(interval);
+}, [items]);
 
   const rawDate = fakeTime.toLocaleDateString("ro-RO", {
     weekday: "long",
@@ -104,7 +120,75 @@ const [billingAddress, setBillingAddress] = useState("");
         : [...prev, a]
     );
   };
+  /* ======= Producer accept or reject=======*/
+  const updateRequestStatus = (id: string, status: "accepted" | "rejected") => {
+  setRequests((prev) =>
+    prev.map((r) =>
+      r.id === id ? { ...r, status } : r
+    )
+  );
 
+  setToast({
+    visible: true,
+    title:
+      status === "accepted"
+        ? "Cerere acceptată ✅"
+        : "Cerere refuzată ❌",
+    message: "",
+  });
+
+  setTimeout(() => {
+    setToast({ visible: false, title: "", message: "" });
+  }, 2500);
+};
+  const generateRequest = () => {
+  if (items.length === 0) return;
+
+  const randomItem =
+    items[Math.floor(Math.random() * items.length)];
+
+  const randomName =
+    names[Math.floor(Math.random() * names.length)];
+
+  const qty = Math.ceil(Math.random() * 3);
+
+  const template =
+    prompts[Math.floor(Math.random() * prompts.length)];
+
+  const message = template
+    .replace("{item}", randomItem.title)
+    .replace("{qty}", qty.toString());
+
+  const newRequest = {
+    id: Date.now().toString(),
+    name: randomName,
+    item: randomItem.title,
+    qty,
+    message,
+    status: "pending",
+  };
+
+  setRequests((prev) => [newRequest, ...prev]);
+};
+  const names = [
+  "Ana M.",
+  "Vlad S.",
+  "Cristian B.",
+  "Ioana D.",
+  "Andrei N.",
+  "Maria A.",
+  "Mihai Z.",
+  "Mark K.",
+  "Anca P",
+];
+
+const prompts = [
+  "Bună! Aș dori {qty}x {item}, vă rog.",
+  "Sunt interesat de {item}. Puteți pregăti {qty}?",
+  "Mai aveți {item}? Vreau {qty} bucăți.",
+  "Salut, vreau să comand {item} ({qty} buc), mulțumesc!",
+  "Pot lua {qty} porții de {item}?",
+];
   const createItem = () => {
     if (!title || !desc || !price) return;
 
@@ -524,7 +608,92 @@ return (
     </Pressable>
   </>
 )}
+{tab === "requests" && (
+  <>
+    <Text style={{ color: "white", fontSize: 22, fontWeight: "bold", marginBottom: 12 }}>
+      Cereri primite
+    </Text>
+
+    <Text style={{ color: "#94a3b8", marginBottom: 12 }}>
+      Cereri noi la fiecare ~15 minute platformă
+    </Text>
+
+    {requests.map((r) => (
+      <View
+        key={r.id}
+        style={{
+          backgroundColor: "#1e293b",
+          padding: 14,
+          borderRadius: 12,
+          marginBottom: 12,
+        }}
+      >
+        <Text style={{ color: "white", fontWeight: "bold" }}>
+          {r.name}
+        </Text>
+
+        <Text style={{ color: "#94a3b8", fontSize: 12 }}>
+          {r.item} • Qty: {r.qty}
+        </Text>
+
+        <Text style={{ color: "#94a3b8", marginVertical: 6 }}>
+          "{r.message}"
+        </Text>
+
+        <Text
+          style={{
+            color:
+              r.status === "accepted"
+                ? "#22c55e"
+                : r.status === "rejected"
+                ? "#ef4444"
+                : "#94a3b8",
+            marginBottom: 8,
+          }}
+        >
+          {r.status === "pending"
+            ? "în așteptare"
+            : r.status === "accepted"
+            ? "Acceptată"
+            : "Refuzată"}
+        </Text>
+
+        {r.status === "pending" && (
+          <View style={{ flexDirection: "row", gap: 10 }}>
+            <Pressable
+              onPress={() => updateRequestStatus(r.id, "accepted")}
+              style={{
+                flex: 1,
+                backgroundColor: "#22c55e",
+                padding: 10,
+                borderRadius: 8,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "white" }}>Acceptă</Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => updateRequestStatus(r.id, "rejected")}
+              style={{
+                flex: 1,
+                borderWidth: 1,
+                borderColor: "#334155",
+                padding: 10,
+                borderRadius: 8,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "#94a3b8" }}>Refuză</Text>
+            </Pressable>
+          </View>
+        )}
+      </View>
+    ))}
+  </>
+)}
         {/* ================= PROFILE ================= */}
+        
 {tab === "profile" && (
   <>
     <Text style={{ color: "white", fontSize: 22, fontWeight: "bold", marginBottom: 12 }}>
@@ -613,9 +782,11 @@ alignItems: "center",
 
       {/* NAV */}
       <View style={nav}>
+        
         {[
   { key: "home", label: "Anunțuri" },
   { key: "create", label: "Creează" },
+  { key: "requests", label: "Cereri" },
   { key: "profile", label: "Profil" },
 ].map((t) => (
   <Pressable key={t.key} onPress={() => setTab(t.key)}>
@@ -624,6 +795,23 @@ alignItems: "center",
         {t.label}
       </Text>
 
+      {/* 🔴 requests dot */}
+      {t.key === "requests" &&
+        requests.some((r) => r.status === "pending") && (
+          <View
+            style={{
+              position: "absolute",
+              top: -4,
+              right: -10,
+              width: 8,
+              height: 8,
+              backgroundColor: "red",
+              borderRadius: 4,
+            }}
+          />
+        )}
+
+      {/* 🔴 profile dot */}
       {t.key === "profile" && !isBillingDone && (
         <View
           style={{
