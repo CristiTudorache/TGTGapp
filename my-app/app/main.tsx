@@ -974,11 +974,14 @@ const historyOrders = orders.filter(
 
           <Text style={{ color: "#94a3b8", marginTop: 6 }}>
             {{
-              reserved: "Rezervată",
-              preparing: "În pregătire",
-              packing: "Ambalare",
-              ready: "Gata de ridicare",
-            }[order.status]}
+  reserved: "Rezervată",
+  preparing: "În pregătire",
+  packing: "Ambalare",
+  ready: "Gata de ridicare",
+  completed: "Finalizată",
+  missed: "Neridicată",
+}[order.status]
+}
           </Text>
 
           {/* actions for read; ready actions */}
