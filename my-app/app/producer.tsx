@@ -19,7 +19,8 @@ export default function Producer() {
 const [name, setName] = useState("");
 const [email, setEmail] = useState("");
 const [type, setType] = useState<"farmer" | "shop" | null>(null);
-
+const [editingProfile, setEditingProfile] = useState(false);
+const [city, setCity] = useState("București");
 const validateEmail = (email: string) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
@@ -928,11 +929,10 @@ return (
         
 {tab === "profile" && (
   <>
-    <Text style={{ color: "white", fontSize: 22, fontWeight: "bold" as const, marginBottom: 12 }}>
+    <Text style={{ color: "white", fontSize: 22, fontWeight: "bold", marginBottom: 12 }}>
       Profil
     </Text>
 
-    {/* PROFILE CARD */}
     <View
       style={{
         backgroundColor: "#1e293b",
@@ -941,73 +941,141 @@ return (
         marginBottom: 16,
       }}
     >
-      <Text style={{ color: "white", fontWeight: "bold" as const, fontSize: 16 }}>
-        {name || "Nume"}
-      </Text>
+      {editingProfile ? (
+        <>
+          <View style={{ marginBottom: 10 }}>
+  <Text style={{ color: "#94a3b8", marginBottom: 4 }}>Nume</Text>
+  <TextInput
+    value={name}
+    onChangeText={setName}
+    placeholder="Nume"
+    placeholderTextColor="#64748b"
+    style={{
+      backgroundColor: "#020617",
+      borderRadius: 10,
+      padding: 12,
+      color: "white",
+      borderWidth: 1,
+      borderColor: "#334155",
+    }}
+  />
+</View>
 
-      <Text style={{ color: "#94a3b8", marginTop: 4 }}>
-        Producer • {type === "farmer" ? "Farmer" : "Shop"}
-      </Text>
+          <View style={{ marginBottom: 10 }}>
+  <Text style={{ color: "#94a3b8", marginBottom: 4 }}>Email</Text>
+  <TextInput
+    value={email}
+    onChangeText={setEmail}
+    placeholder="Email"
+    placeholderTextColor="#64748b"
+    style={{
+      backgroundColor: "#020617",
+      borderRadius: 10,
+      padding: 12,
+      color: "white",
+      borderWidth: 1,
+      borderColor: "#334155",
+    }}
+  />
+</View>
 
-      <Text style={{ color: "#94a3b8", marginTop: 6 }}>
-        📧 {email || "email@gmail.com"}
-      </Text>
+          <View style={{ marginBottom: 10 }}>
+  <Text style={{ color: "#94a3b8", marginBottom: 4 }}>Oraș</Text>
+  <TextInput
+    value={city}
+    onChangeText={setCity}
+    placeholder="Oraș"
+    placeholderTextColor="#64748b"
+    style={{
+      backgroundColor: "#020617",
+      borderRadius: 10,
+      padding: 12,
+      color: "white",
+      borderWidth: 1,
+      borderColor: "#334155",
+    }}
+  />
+</View>
 
-      <Text style={{ color: "#94a3b8", marginTop: 4 }}>
-        📍 București
-      </Text>
+          <Pressable
+            onPress={() => setEditingProfile(false)}
+            style={button}
+          >
+            <Text style={{ color: "white" }}>Salvează</Text>
+          </Pressable>
+        </>
+      ) : (
+        <>
+          <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>
+            {name || "Nume"}
+          </Text>
+
+          <Text style={{ color: "#94a3b8", marginTop: 4 }}>
+            Producer • {type === "farmer" ? "Farmer" : "Shop"}
+          </Text>
+
+          <Text style={{ color: "#94a3b8", marginTop: 6 }}>
+            📧 {email || "email@gmail.com"}
+          </Text>
+
+          <Text style={{ color: "#94a3b8", marginTop: 4 }}>
+            📍 {city}
+          </Text>
+
+          <Pressable
+            onPress={() => setEditingProfile(true)}
+            style={{ marginTop: 10 }}
+          >
+            <Text style={{ color: "#22c55e" }}>
+              ✏️ Editează profil
+            </Text>
+          </Pressable>
+        </>
+      )}
     </View>
 
     {/* FACTURI */}
     <Pressable
-  onPress={() => setTab("billing")}
-  style={{
-    backgroundColor: "#1e293b",
-    padding: 14,
-    borderRadius: 10,
-    marginBottom: 10,
-    flexDirection: "row",
-alignItems: "center",
-  }}
->
+      onPress={() => setTab("billing")}
+      style={{
+        backgroundColor: "#1e293b",
+        padding: 14,
+        borderRadius: 10,
+        marginBottom: 10,
+        flexDirection: "row",
+        alignItems: "center",
+      }}
+    >
       <View style={{ flex: 1 }}>
-  <Text style={{ color: "white" }}>
-    📄 Informații factură
-  </Text>
+        <Text style={{ color: "white" }}>
+          📄 Informații factură
+        </Text>
 
-  <Text style={{ color: "#94a3b8", fontSize: 12 }}>
-    {isBillingDone ? "Completat" : "Necompletat"}
-  </Text>
-</View>
+        <Text style={{ color: "#94a3b8", fontSize: 12 }}>
+          {isBillingDone ? "Completat" : "Necompletat"}
+        </Text>
+      </View>
 
-<View style={{ marginLeft: "auto" }}>
-  <Text style={{ color: "#94a3b8", fontSize: 18 }}>
-    ›
-  </Text>
-</View>
-
-<Text style={{ color: "#94a3b8", fontSize: 18, marginLeft: 10 }}>
-</Text>
-
-      <Text style={{ color: "#94a3b8", fontSize: 12 }}>
-</Text>
+      <Text style={{ color: "#94a3b8", fontSize: 18 }}>
+        ›
+      </Text>
     </Pressable>
 
     {/* LOGOUT */}
     <Pressable
-  onPress={() => {
-  router.replace("/");
-}}
-  style={{
-    backgroundColor: "#1e293b",
-    padding: 14,
-    borderRadius: 10,
-  }}
->
-  <Text style={{ color: "#ef4444", textAlign: "center" }}>
-    ⎋ Deconectare
-  </Text>
-</Pressable>
+      onPress={() => {
+        router.replace("/");
+      }}
+      style={{
+        backgroundColor: "#1e293b",
+        padding: 14,
+        borderRadius: 10,
+      }}
+    >
+      <Text style={{ color: "#ef4444", textAlign: "center" }}>
+        ⎋ Deconectare
+      </Text>
+    </Pressable>
   </>
 )}
       </ScrollView>

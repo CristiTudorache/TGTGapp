@@ -77,6 +77,7 @@ const { ngoRequests, addNgoRequest, notifications, factura, setFactura } = useAp
 const [email, setEmail] = useState("");
 const [phone, setPhone] = useState("");
 const [address, setAddress] = useState("");
+const [editingProfile, setEditingProfile] = useState(false);
   const isFacturaComplete =
   factura &&
   factura.name &&
@@ -203,37 +204,77 @@ addNgoRequest({
       Înregistrare ONG
     </Text>
 
-    <TextInput
-  placeholder="Nume organizație"
-  placeholderTextColor="#94a3b8"
-  style={inputStyle}
-  value={orgName}
-  onChangeText={setOrgName}
-/>
+    <View style={{ marginBottom: 10 }}>
+  <Text style={{ color: "#94a3b8", marginBottom: 4 }}>Organizație</Text>
+  <TextInput
+    value={orgName}
+    onChangeText={setOrgName}
+    placeholder="Nume organizație"
+    placeholderTextColor="#64748b"
+    style={{
+      backgroundColor: "#020617",
+      borderRadius: 10,
+      padding: 12,
+      color: "white",
+      borderWidth: 1,
+      borderColor: "#334155",
+    }}
+  />
+</View>
 
-    <TextInput
-  placeholder="Email"
-  placeholderTextColor="#94a3b8"
-  style={inputStyle}
-  value={email}
-  onChangeText={setEmail}
-/>
+    <View style={{ marginBottom: 10 }}>
+  <Text style={{ color: "#94a3b8", marginBottom: 4 }}>Email</Text>
+  <TextInput
+    value={email}
+    onChangeText={setEmail}
+    placeholder="Email"
+    placeholderTextColor="#64748b"
+    style={{
+      backgroundColor: "#020617",
+      borderRadius: 10,
+      padding: 12,
+      color: "white",
+      borderWidth: 1,
+      borderColor: "#334155",
+    }}
+  />
+</View>
 
-    <TextInput
-  placeholder="Telefon"
-  placeholderTextColor="#94a3b8"
-  style={inputStyle}
-  value={phone}
-  onChangeText={setPhone}
-/>
+    <View style={{ marginBottom: 10 }}>
+  <Text style={{ color: "#94a3b8", marginBottom: 4 }}>Telefon</Text>
+  <TextInput
+    value={phone}
+    onChangeText={setPhone}
+    placeholder="Telefon"
+    placeholderTextColor="#64748b"
+    style={{
+      backgroundColor: "#020617",
+      borderRadius: 10,
+      padding: 12,
+      color: "white",
+      borderWidth: 1,
+      borderColor: "#334155",
+    }}
+  />
+</View>
 
-    <TextInput
-  placeholder="Adresă"
-  placeholderTextColor="#94a3b8"
-  style={inputStyle}
-  value={address}
-  onChangeText={setAddress}
-/>
+    <View style={{ marginBottom: 10 }}>
+  <Text style={{ color: "#94a3b8", marginBottom: 4 }}>Adresă</Text>
+  <TextInput
+    value={address}
+    onChangeText={setAddress}
+    placeholder="Adresă"
+    placeholderTextColor="#64748b"
+    style={{
+      backgroundColor: "#020617",
+      borderRadius: 10,
+      padding: 12,
+      color: "white",
+      borderWidth: 1,
+      borderColor: "#334155",
+    }}
+  />
+</View>
 
     <Pressable
       onPress={() => {
@@ -560,39 +601,93 @@ addNgoRequest({
         {/* PROFILE */}
         {tab === "profile" && isVerified && (
   <>
-    {/* TITLE */}
     <Text style={{ color: "white", fontSize: 22, fontWeight: "600", marginTop: 16 }}>
       Profil
     </Text>
 
-    {/* PROFILE CARD */}
-    <View style={{
-      backgroundColor: "#1e293b",
-      borderRadius: 14,
-      padding: 16,
-      marginTop: 16,
-    }}>
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-        {/* avator */}
-        <View style={{
-          width: 50,
-          height: 50,
-          borderRadius: 25,
-          backgroundColor: "#334155",
-          alignItems: "center",
-          justifyContent: "center",
-        }}>
-          <Text style={{ color: "#22c55e", fontSize: 20 }}>👤</Text>
-        </View>
+    <View
+      style={{
+        backgroundColor: "#1e293b",
+        borderRadius: 14,
+        padding: 16,
+        marginTop: 16,
+      }}
+    >
+      {editingProfile ? (
+        <>
+          <TextInput
+            value={orgName}
+            onChangeText={setOrgName}
+            placeholder="Nume organizație"
+            placeholderTextColor="#94a3b8"
+            style={inputStyle}
+          />
 
-        {/* Info */}
-        <View>
-          <Text style={{ color: "white", fontWeight: "600" }}>As</Text>
-          <Text style={{ color: "#94a3b8", fontSize: 12 }}>NGO</Text>
-          <Text style={{ color: "#94a3b8", fontSize: 12 }}>as@gmail.com</Text>
-          <Text style={{ color: "#94a3b8", fontSize: 12 }}>București</Text>
-        </View>
-      </View>
+          <TextInput
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Email"
+            placeholderTextColor="#94a3b8"
+            style={inputStyle}
+          />
+
+          <TextInput
+            value={phone}
+            onChangeText={setPhone}
+            placeholder="Telefon"
+            placeholderTextColor="#94a3b8"
+            style={inputStyle}
+          />
+
+          <TextInput
+            value={address}
+            onChangeText={setAddress}
+            placeholder="Adresă"
+            placeholderTextColor="#94a3b8"
+            style={inputStyle}
+          />
+
+          <Pressable
+            onPress={() => setEditingProfile(false)}
+            style={{
+              backgroundColor: "#22c55e",
+              padding: 12,
+              borderRadius: 10,
+              marginTop: 10,
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "white" }}>Salvează</Text>
+          </Pressable>
+        </>
+      ) : (
+        <>
+          <Text style={{ color: "white", fontWeight: "600" }}>
+            {orgName || "Nume ONG"}
+          </Text>
+
+          <Text style={{ color: "#94a3b8", fontSize: 12 }}>
+            {email}
+          </Text>
+
+          <Text style={{ color: "#94a3b8", fontSize: 12 }}>
+            {phone}
+          </Text>
+
+          <Text style={{ color: "#94a3b8", fontSize: 12 }}>
+            {address}
+          </Text>
+
+          <Pressable
+            onPress={() => setEditingProfile(true)}
+            style={{ marginTop: 10 }}
+          >
+            <Text style={{ color: "#22c55e" }}>
+              ✏️ Editează profil
+            </Text>
+          </Pressable>
+        </>
+      )}
     </View>
 
     {/* FACTURA */}
@@ -618,49 +713,34 @@ addNgoRequest({
         </Text>
       </View>
 
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-  {!isFacturaComplete && (
-    <View
-      style={{
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: "#ef4444",
-      }}
-    />
-  )}
-
-  <Text style={{ color: "#94a3b8" }}>›</Text>
-</View>
+      <Text style={{ color: "#94a3b8" }}>›</Text>
     </Pressable>
-
-    
 
     {/* LOGOUT */}
     <Pressable
-  onPress={() => {
-    setIsVerified(false);
-    setTab("register");
-    router.replace("/");
-  }}
-  style={{
-    marginTop: 20,
-    padding: 14,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#ef4444",
-  }}
->
-  <Text
-    style={{
-      color: "#ef4444",
-      textAlign: "center",
-      fontWeight: "bold",
-    }}
-  >
-    Deconectare
-  </Text>
-</Pressable>
+      onPress={() => {
+        setIsVerified(false);
+        setTab("register");
+        router.replace("/");
+      }}
+      style={{
+        marginTop: 20,
+        padding: 14,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: "#ef4444",
+      }}
+    >
+      <Text
+        style={{
+          color: "#ef4444",
+          textAlign: "center",
+          fontWeight: "bold",
+        }}
+      >
+        Deconectare
+      </Text>
+    </Pressable>
   </>
 )}
 {tab === "factura" && (
