@@ -269,19 +269,19 @@ const startEditItem = (item: any) => {
   setTab("create");
 };
   const createItem = () => {
-    if (!title || !desc || !price) return;
+    if (!title || !desc || (productType !== "Gratis" && !price)) return;
 
     const newItem = {
-      id: Date.now().toString(),
-      title,
-      desc,
-      price,
-      qty,
-      pickup,
-      image,
-      allergens,
-      type: productType,
-    };
+  id: Date.now().toString(),
+  title,
+  desc,
+  price: productType === "Gratis" ? "0" : price,
+  qty,
+  pickup,
+  image,
+  allergens,
+  type: productType,
+};
 
     setItems((prev) => [newItem, ...prev]);
 
@@ -491,8 +491,8 @@ return (
                 </Text>
 
                 <Text style={{ color: "#22c55e" }}>
-                  {item.price} RON
-                </Text>
+  {item.type === "Gratis" ? "GRATIS" : `${item.price} RON`}
+</Text>
 
                 <Text style={{ color: "#94a3b8" }}>
   Qty: {item.qty}
@@ -625,13 +625,17 @@ return (
             </View>
 
             {/* PRICE */}
-            <Text style={label}>Preț (RON)</Text>
-            <TextInput
-              value={price}
-              onChangeText={setPrice}
-              keyboardType="numeric"
-              style={input}
-            />
+            {productType !== "Gratis" && (
+  <>
+    <Text style={label}>Preț (RON)</Text>
+    <TextInput
+      value={price}
+      onChangeText={setPrice}
+      keyboardType="numeric"
+      style={input}
+    />
+  </>
+)}
 
             {/* QTY */}
             <Text style={label}>Cantitate</Text>
