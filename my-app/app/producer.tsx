@@ -256,6 +256,18 @@ const prompts = [
 const deleteItem = (id: string) => {
   setItems((prev) => prev.filter((item) => item.id !== id));
 };
+const startEditItem = (item: any) => {
+  setTitle(item.title);
+  setDesc(item.desc);
+  setPrice(item.price);
+  setQty(item.qty);
+  setPickup(item.pickup);
+  setImage(item.image);
+  setAllergens(item.allergens || []);
+  setProductType(item.type || "Oferta");
+
+  setTab("create");
+};
   const createItem = () => {
     if (!title || !desc || !price) return;
 
@@ -466,20 +478,7 @@ return (
                 }}
                 
               >
-                <Pressable
-  onPress={() => deleteItem(item.id)}
-  style={{
-    marginTop: 10,
-    backgroundColor: "#ef444420",
-    padding: 8,
-    borderRadius: 8,
-    alignItems: "center",
-  }}
->
-  <Text style={{ color: "#ef4444", fontSize: 12 }}>
-    Șterge
-  </Text>
-</Pressable>
+                
                 {item.image && (
                   <Image
                     source={{ uri: item.image }}
@@ -496,8 +495,56 @@ return (
                 </Text>
 
                 <Text style={{ color: "#94a3b8" }}>
-                  Qty: {item.qty}
-                </Text>
+  Qty: {item.qty}
+</Text>
+
+<View
+  style={{
+    flexDirection: "row",
+    gap: 10,
+    marginTop: 10,
+  }}
+>
+  {/* EDIT */}
+  <Pressable
+    onPress={() => startEditItem(item)}
+    style={{
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      backgroundColor: "#020617",
+      paddingVertical: 6,
+      paddingHorizontal: 10,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: "#334155",
+    }}
+  >
+    <Text style={{ color: "#94a3b8", fontSize: 12 }}>
+      ✏️ Editează
+    </Text>
+  </Pressable>
+
+  {/* DELETE */}
+  <Pressable
+    onPress={() => deleteItem(item.id)}
+    style={{
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      backgroundColor: "#020617",
+      paddingVertical: 6,
+      paddingHorizontal: 10,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: "#334155",
+    }}
+  >
+    <Text style={{ color: "#ef4444", fontSize: 12 }}>
+      🗑 Șterge
+    </Text>
+  </Pressable>
+</View>
               </View>
             ))}
           </>
