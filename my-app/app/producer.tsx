@@ -35,6 +35,28 @@ const [billingAddress, setBillingAddress] = useState("");
   title: "",
   message: "",
 });
+const [finance, setFinance] = useState<{
+  totalOrders: number;
+  totalRevenue: number;
+  totalCommission: number;
+  totalProfit: number;
+  products: Record<
+    string,
+    {
+      name: string;
+      sold: number;
+      revenue: number;
+      profit: number;
+      commission: number;
+    }
+  >;
+}>({
+  totalOrders: 0,
+  totalRevenue: 0,
+  totalCommission: 0,
+  totalProfit: 0,
+  products: {},
+});
 
   /* ================= FORM ================= */
 
@@ -127,6 +149,48 @@ const [billingAddress, setBillingAddress] = useState("");
       r.id === id ? { ...r, status } : r
     )
   );
+  if (status === "accepted") {
+  const acceptedRequest = requests.find((r) => r.id === id);
+  if (!acceptedRequest) return;
+
+  const product = items.find(
+    (i) => i.title === acceptedRequest.item
+  );
+  if (!product) return;
+
+  const totalPrice =
+    parseFloat(product.price) * acceptedRequest.qty;
+
+  const commission = totalPrice * 0.1;
+  const profit = totalPrice * 0.9;
+
+  setFinance((prev) => {
+    const existing = prev.products[product.title] || {
+      name: product.title,
+      sold: 0,
+      revenue: 0,
+      profit: 0,
+      commission: 0,
+    };
+
+    return {
+      totalOrders: prev.totalOrders + 1,
+      totalRevenue: prev.totalRevenue + totalPrice,
+      totalCommission: prev.totalCommission + commission,
+      totalProfit: prev.totalProfit + profit,
+      products: {
+        ...prev.products,
+        [product.title]: {
+          name: product.title,
+          sold: existing.sold + acceptedRequest.qty,
+          revenue: existing.revenue + totalPrice,
+          profit: existing.profit + profit,
+          commission: existing.commission + commission,
+        },
+      },
+    };
+  });
+}
 
   setToast({
     visible: true,
@@ -189,6 +253,9 @@ const prompts = [
   "Salut, vreau să comand {item} ({qty} buc), mulțumesc!",
   "Pot lua {qty} porții de {item}?",
 ];
+const deleteItem = (id: string) => {
+  setItems((prev) => prev.filter((item) => item.id !== id));
+};
   const createItem = () => {
     if (!title || !desc || !price) return;
 
@@ -247,7 +314,7 @@ setTab("home");
         style={{
           color: "white",
           fontSize: 26,
-          fontWeight: "bold",
+          fontWeight: "bold" as const,
           marginBottom: 6,
         }}
       >
@@ -363,7 +430,7 @@ return (
           {formattedDate} • {formattedTime}
         </Text>
 
-        <Text style={{ color: "white", fontSize: 22, fontWeight: "bold" }}>
+        <Text style={{ color: "white", fontSize: 22, fontWeight: "bold" as const }}>
           FoodLink
         </Text>
 
@@ -395,8 +462,24 @@ return (
                   padding: 14,
                   borderRadius: 12,
                   marginTop: 12,
+                  
                 }}
+                
               >
+                <Pressable
+  onPress={() => deleteItem(item.id)}
+  style={{
+    marginTop: 10,
+    backgroundColor: "#ef444420",
+    padding: 8,
+    borderRadius: 8,
+    alignItems: "center",
+  }}
+>
+  <Text style={{ color: "#ef4444", fontSize: 12 }}>
+    Șterge
+  </Text>
+</Pressable>
                 {item.image && (
                   <Image
                     source={{ uri: item.image }}
@@ -404,7 +487,7 @@ return (
                   />
                 )}
 
-                <Text style={{ color: "white", fontWeight: "bold" }}>
+                <Text style={{ color: "white", fontWeight: "bold" as const }}>
                   {item.title}
                 </Text>
 
@@ -610,7 +693,7 @@ return (
 )}
 {tab === "requests" && (
   <>
-    <Text style={{ color: "white", fontSize: 22, fontWeight: "bold", marginBottom: 12 }}>
+    <Text style={{ color: "white", fontSize: 22, fontWeight: "bold" as const, marginBottom: 12 }}>
       Cereri primite
     </Text>
 
@@ -628,7 +711,7 @@ return (
           marginBottom: 12,
         }}
       >
-        <Text style={{ color: "white", fontWeight: "bold" }}>
+        <Text style={{ color: "white", fontWeight: "bold" as const }}>
           {r.name}
         </Text>
 
@@ -692,11 +775,109 @@ return (
     ))}
   </>
 )}
+{/* =============== finante ===============*/}
+{tab === "finance" && (
+  <>
+    <Text style={{ color: "white", fontSize: 22, fontWeight: "bold" as const, marginBottom: 12 }}>
+      Finanțe
+    </Text>
+
+    <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
+      <View style={card}>
+        <Text style={labelSmall}>Comenzi acceptate</Text>
+        <Text style={value}>{finance.totalOrders}</Text>
+      </View>
+
+      <View style={card}>
+        <Text style={labelSmall}>Vânzări totale</Text>
+        <Text style={value}>{finance.totalRevenue.toFixed(2)} RON</Text>
+      </View>
+
+      <View style={card}>
+        <Text style={labelSmall}>Comision FoodLink (10%)</Text>
+        <Text style={{ color: "#ef4444" }}>
+          -{finance.totalCommission.toFixed(2)}
+        </Text>
+      </View>
+
+      <View style={[card, { backgroundColor: "#22c55e20" }]}>
+        <Text style={labelSmall}>Venitul tău (90%)</Text>
+        <Text style={{ color: "#22c55e" }}>
+          {finance.totalProfit.toFixed(2)}
+        </Text>
+      </View>
+    </View>
+
+    {Object.values(finance.products).length > 0 && (
+      <View style={[card, { marginTop: 16 }]}>
+        {(() => {
+          const best = Object.values(finance.products).sort(
+            (a, b) => b.sold - a.sold
+          )[0];
+
+          return (
+            <>
+              <Text style={{ color: "#f59e0b" }}>
+                🏆 Cel mai vândut produs
+              </Text>
+              <Text style={{ color: "white", fontWeight: "bold"  as const}}>
+                {best.name}
+              </Text>
+              <Text style={{ color: "#94a3b8" }}>
+                {best.sold} vândute • {best.revenue.toFixed(2)} RON • {best.profit.toFixed(2)} RON profit
+              </Text>
+            </>
+          );
+        })()}
+      </View>
+    )}
+
+    <View style={[card, { marginTop: 16 }]}>
+      <Text style={{ color: "white", marginBottom: 8 }}>
+        📊 Câștiguri per produs
+      </Text>
+
+      {Object.values(finance.products)
+        .sort((a, b) => b.revenue - a.revenue)
+        .map((p, index) => (
+          <View key={p.name} style={{ marginBottom: 8 }}>
+            <Text style={{ color: "#94a3b8" }}>
+              #{index + 1} {p.name}
+            </Text>
+
+            <Text style={{ color: "#22c55e" }}>
+              {p.profit.toFixed(2)} RON
+            </Text>
+
+            <Text style={{ color: "#ef4444", fontSize: 12 }}>
+              -{p.commission.toFixed(2)} comision
+            </Text>
+          </View>
+        ))}
+
+      <View
+  style={{
+    marginTop: 12,
+    borderTopWidth: 1,
+    borderColor: "#334155",
+    paddingTop: 10,
+  }}
+>
+        <Text style={{ color: "#22c55e" }}>
+          TOTAL: {finance.totalProfit.toFixed(2)} RON
+        </Text>
+        <Text style={{ color: "#ef4444", fontSize: 12 }}>
+          -{finance.totalCommission.toFixed(2)} RON
+        </Text>
+      </View>
+    </View>
+  </>
+)}
         {/* ================= PROFILE ================= */}
         
 {tab === "profile" && (
   <>
-    <Text style={{ color: "white", fontSize: 22, fontWeight: "bold", marginBottom: 12 }}>
+    <Text style={{ color: "white", fontSize: 22, fontWeight: "bold" as const, marginBottom: 12 }}>
       Profil
     </Text>
 
@@ -709,7 +890,7 @@ return (
         marginBottom: 16,
       }}
     >
-      <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>
+      <Text style={{ color: "white", fontWeight: "bold" as const, fontSize: 16 }}>
         {name || "Nume"}
       </Text>
 
@@ -787,6 +968,7 @@ alignItems: "center",
   { key: "home", label: "Anunțuri" },
   { key: "create", label: "Creează" },
   { key: "requests", label: "Cereri" },
+  { key: "finance", label: "Finanțe" },
   { key: "profile", label: "Profil" },
 ].map((t) => (
   <Pressable key={t.key} onPress={() => setTab(t.key)}>
@@ -888,4 +1070,22 @@ const activeText = {
 
 const normalText = {
   color: "#94a3b8",
+};
+const card = {
+  backgroundColor: "#1e293b",
+  padding: 12,
+  borderRadius: 12,
+  flex: 1,
+  minWidth: 150,
+};
+
+const labelSmall = {
+  color: "#94a3b8",
+  fontSize: 12,
+};
+
+const value = {
+  color: "white",
+  fontSize: 18,
+  fontWeight: "bold" as const,
 };
