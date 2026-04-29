@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-/* ================= TYPES ================= */
+/*  TYPES  */
 
 type Card = {
   id: string;
@@ -86,11 +86,11 @@ addProducerItem: (item: any) => void;
   markAllRead: () => void;
 };
 
-/* ================= CONTEXT ================= */
+/*  CONTEXT  */
 
 const AppContext = createContext<AppContextType>({} as AppContextType);
 
-/* ================= PROVIDER ================= */
+/*  PROVIDER  */
 
 export const AppProvider = ({ children }: any) => {
   const [factura, setFactura] = useState<Factura | null>(null);
@@ -101,7 +101,7 @@ export const AppProvider = ({ children }: any) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [ngoRequests, setNgoRequests] = useState<any[]>([]);
 const [producerItems, setProducerItems] = useState<any[]>([]);
-  /* ================= NGO ================= */
+  /*  NGO  */
 
   const addNgoRequest = (req: any) => {
     const newRequest = {
@@ -183,7 +183,7 @@ const [producerItems, setProducerItems] = useState<any[]>([]);
   const order = orders.find((o) => o.id === id);
   if (!order) return;
 
-  // 💵 CASH → points only when picked up
+  // CASH: points only when picked up
   if (order.paymentMethod === "cash") {
     const price = parseFloat(
       order.item.price.replace(",", ".").replace(/[^\d.]/g, "")
@@ -212,7 +212,7 @@ const [producerItems, setProducerItems] = useState<any[]>([]);
   const order = orders.find((o) => o.id === id);
   if (!order) return;
 
-  // 💳 CARD → remove previously given points
+  //card remove given points
   if (order.paymentMethod === "card") {
     const price = parseFloat(
       order.item.price.replace(",", ".").replace(/[^\d.]/g, "")
@@ -237,7 +237,7 @@ const [producerItems, setProducerItems] = useState<any[]>([]);
   );
 };
 
-  /*  CONTESTATIE  */
+  /*  contestatii  */
 
   const applyContestatie = (id: string, reason: string) => {
     const order = orders.find((o) => o.id === id);
@@ -335,7 +335,7 @@ setPoints((prev) => prev + refund);
     return () => clearInterval(interval);
   }, []);
 
-  /* ----- DONATIONS ----- */
+  /*  DONATIONS - */
 
   const addDonation = (donation: Donation) => {
     setDonations((prev) => [donation, ...prev]);
@@ -348,7 +348,7 @@ setPoints((prev) => prev + refund);
     });
   };
 
-  /* ---- POINTS ---- */
+  /* points  */
 
   const addPoints = (amount: number) => {
     setPoints((prev) => prev + amount);
