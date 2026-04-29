@@ -16,7 +16,6 @@ export default function Checkout() {
   const { item, donation } = useLocalSearchParams();
 
   const parsedItem = item ? JSON.parse(item as string) : null;
-
   // addNotification
   const {
     addOrder,
@@ -47,21 +46,24 @@ export default function Checkout() {
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
 
   // ================= PAYMENT LOGIC =================
-  const handlePay = () => {
+  const handlePay = (forcedMethod?: "cash" | "card") => {
     if (!parsedItem) return;
 
     // CARD VALIDATION
-    if (cardMode === "saved" && !selectedCardId) {
-      alert("Selectează un card salvat");
+    // CARD VALIDATION ONLY IF CARD
+if (method === "card" || isDonation) {
+  if (cardMode === "saved" && !selectedCardId) {
+    alert("Selectează un card salvat");
+    return;
+  }
+
+  if (cardMode === "new") {
+    if (!cardNumber || !cardName || !expiry || !cvv) {
+      alert("Completează toate câmpurile cardului");
       return;
     }
-
-    if (cardMode === "new") {
-      if (!cardNumber || !cardName || !expiry || !cvv) {
-        alert("Completează toate câmpurile cardului");
-        return;
-      }
-    }
+  }
+}
 
     // SAVE CARD
     if (cardMode === "new" && saveCard) {
@@ -87,22 +89,26 @@ export default function Checkout() {
     }
 
     // ================= NORMAL ORDER =================
-    addOrder({
-      id: Date.now().toString(),
-      item: parsedItem,
-      date: Date.now(),
-    });
+    const finalMethod = forcedMethod || method;
+
+addOrder({
+  id: Date.now().toString(),
+  item: parsedItem,
+  date: Date.now(),
+  paymentMethod: finalMethod,
+});
 
     //  points (1 leu = 1 point)
-    if (parsedItem.price) {
-      const priceNumber = Math.round(
-        parseFloat(parsedItem.price.replace(",", "."))
-      );
+    // GIVE POINTS ONLY FOR CARD
+if (finalMethod === "card" && parsedItem.price){
+  const priceNumber = Math.round(
+    parseFloat(parsedItem.price.replace(",", "."))
+  );
 
-      if (!isNaN(priceNumber)) {
-        addPoints(priceNumber);
-      }
-    }
+  if (!isNaN(priceNumber)) {
+    addPoints(priceNumber);
+  }
+}
 
    
 
@@ -144,9 +150,8 @@ export default function Checkout() {
 
             <Pressable
               onPress={() => {
-                setMethod("cash");
-                handlePay();
-              }}
+  handlePay("cash");
+}}
               style={{
                 backgroundColor: "#334155",
                 padding: 16,
@@ -292,7 +297,7 @@ export default function Checkout() {
             )}
 
             <Pressable
-              onPress={handlePay}
+              onPress={() => handlePay()}
               style={{
                 backgroundColor: "#22c55e",
                 padding: 16,

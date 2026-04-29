@@ -180,20 +180,62 @@ const [producerItems, setProducerItems] = useState<any[]>([]);
   };
 
   const completeOrder = (id: string) => {
-    setOrders((prev) =>
-      prev.map((o) =>
-        o.id === id ? { ...o, status: "completed" } : o
-      )
+  const order = orders.find((o) => o.id === id);
+  if (!order) return;
+
+  // 💵 CASH → points only when picked up
+  if (order.paymentMethod === "cash") {
+    const price = parseFloat(
+      order.item.price.replace(",", ".").replace(/[^\d.]/g, "")
     );
-  };
+
+    const earned = Math.floor(price);
+
+    setPoints((prev) => prev + earned);
+
+    addNotification({
+      id: Date.now().toString(),
+      title: "Puncte primite ⭐",
+      message: `Ai primit ${earned} puncte`,
+      read: false,
+    });
+  }
+
+  setOrders((prev) =>
+    prev.map((o) =>
+      o.id === id ? { ...o, status: "completed" } : o
+    )
+  );
+};
 
   const missOrder = (id: string) => {
-    setOrders((prev) =>
-      prev.map((o) =>
-        o.id === id ? { ...o, status: "missed" } : o
-      )
+  const order = orders.find((o) => o.id === id);
+  if (!order) return;
+
+  // 💳 CARD → remove previously given points
+  if (order.paymentMethod === "card") {
+    const price = parseFloat(
+      order.item.price.replace(",", ".").replace(/[^\d.]/g, "")
     );
-  };
+
+    const pointsToRemove = Math.floor(price);
+
+    setPoints((prev) => Math.max(prev - pointsToRemove, 0));
+
+    addNotification({
+      id: Date.now().toString(),
+      title: "Puncte retrase",
+      message: `- ${pointsToRemove} puncte (comandă neridicată)`,
+      read: false,
+    });
+  }
+
+  setOrders((prev) =>
+    prev.map((o) =>
+      o.id === id ? { ...o, status: "missed" } : o
+    )
+  );
+};
 
   /*  CONTESTATIE  */
 
@@ -228,10 +270,9 @@ const [producerItems, setProducerItems] = useState<any[]>([]);
         currentOrder.item.price.replace(",", ".").replace(/[^\d.]/g, "")
       );
 
-      const fullPoints = Math.floor(price);
       const refund = Math.floor(price * 0.25);
 
-      setPoints((prev) => Math.max(prev - fullPoints, 0) + refund);
+setPoints((prev) => prev + refund);
 
       addNotification({
         id: Date.now().toString(),

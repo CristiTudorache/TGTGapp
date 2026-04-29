@@ -1060,7 +1060,7 @@ const historyOrders = orders.filter(
                 ? "❌ Comandă neridicată"
                 : "✅ Ridicată"}
             </Text>
-            {order.status === "missed" && (
+            {order.status === "missed" && order.paymentMethod === "card" && (
   <View style={{ marginTop: 10 }}>
 
     {/* warning */}
