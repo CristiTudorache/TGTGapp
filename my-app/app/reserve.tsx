@@ -54,7 +54,7 @@ export default function Reserve() {
         {parsedItem.description}
       </Text>
 
-      {/* ============== BUY ============= */}
+      {/*  BUY  */}
       <Pressable
         onPress={() =>
           router.push({
@@ -74,7 +74,7 @@ export default function Reserve() {
         </Text>
       </Pressable>
 
-      {/* ================= DONATE BUTTON ================= */}
+      {/*  DONATE BUTTON  */}
       <Pressable
         onPress={() => setShowDonation((prev) => !prev)}
         style={{
@@ -95,7 +95,7 @@ export default function Reserve() {
         </Text>
       </Pressable>
 
-      {/* ================= EXPANDED DONATION ================= */}
+      {/*  EXPANDED DONATION  */}
       {showDonation && (
         <View
           style={{

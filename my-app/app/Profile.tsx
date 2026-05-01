@@ -38,7 +38,7 @@ export default function Profile() {
     setEditing(false);
   };
 
-  // ================= stats =================
+  //  stats 
 
   const totalOrders = orders.length;
   const totalDonations = donations.length;
@@ -46,7 +46,7 @@ export default function Profile() {
   // progress bar (100 pts = full,bar
   const progress = Math.min(points / 100, 1);
 
-  // ================= UI =================
+  //  UI 
 
   return (
     <ScrollView
@@ -119,7 +119,7 @@ export default function Profile() {
         )}
       </View>
 
-      {/* ================= reward system ================= */}
+      {/*  reward system  */}
       <View style={card}>
         <Text style={{ color: "white", marginBottom: 10 }}>
           Puncte de recompensă
@@ -173,7 +173,7 @@ export default function Profile() {
         </View>
       </View>
 
-      {/* ================= menu ================= */}
+      {/*  menu  */}
 
       <MenuItem
         title="🎁 Magazin Recompense"
@@ -204,7 +204,7 @@ export default function Profile() {
   );
 }
 
-/* ================= COMPONENTS ================= */
+/*  COMPONENTS  */
 
 const Stat = ({ label, value }: any) => (
   <View>
@@ -223,7 +223,7 @@ const MenuItem = ({ title, subtitle, onPress }: any) => (
   </Pressable>
 );
 
-/* ================= STYLES ================= */
+/*  STYLES  */
 
 const title = {
   color: "white",

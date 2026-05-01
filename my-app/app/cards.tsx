@@ -149,7 +149,7 @@ export default function Cards() {
   );
 }
 
-/* ================= STYLES ================= */
+/*  STYLES  */
 
 const input = {
   backgroundColor: "#334155",

@@ -145,7 +145,7 @@ useEffect(() => {
   const isValidEmail = (email: string) => {
   return /\S+@\S+\.\S+/.test(email);
 };
-  /* ================= SUBMIT ================= */
+  /*  submit  */
 
   const submitRequest = () => {
     if (!message || !qty) return;
@@ -175,7 +175,7 @@ addNgoRequest({
     <SafeAreaView style={{ flex: 1, backgroundColor: "#0f172a" }}>
       <ScrollView style={{ padding: 16 }}>
 
-        {/* HEADER */}
+        {/* header */}
         <Text style={{ color: "#94a3b8", fontSize: 12 }}>
           {formattedDate} • {formattedTime}
         </Text>
@@ -464,7 +464,7 @@ addNgoRequest({
   </>
 )}
 
-        {/* ================= cereri ================= */}
+        {/*  cereri  */}
         {tab === "cereri" && isVerified && (
           <>
             <Text style={{ color: "white", fontSize: 22, fontWeight: "600", marginTop: 16 }}>
@@ -716,7 +716,7 @@ addNgoRequest({
       <Text style={{ color: "#94a3b8" }}>›</Text>
     </Pressable>
 
-    {/* LOGOUT */}
+    {/* logout */}
     <Pressable
       onPress={() => {
         setIsVerified(false);

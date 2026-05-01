@@ -46,7 +46,7 @@ export default function Product() {
         {parsedItem.description}
       </Text>
 
-      {/* ================= BUY BUTTON ================= */}
+      {/*  BUY BUTTON  */}
       <Pressable
         onPress={() =>
           router.push({
@@ -66,7 +66,7 @@ export default function Product() {
         </Text>
       </Pressable>
 
-      {/* ================= DONATE BUTTON ================= */}
+      {/*  DONATE button  */}
       <Pressable
         onPress={() =>
           router.push({

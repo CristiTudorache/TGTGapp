@@ -320,7 +320,6 @@ const markers = [
 
 export default function Main() {
   const params = useLocalSearchParams();
-const { orders, notifications, markAllRead, completeOrder, missOrder, applyContestatie } = useApp();
   const [tab, setTab] = useState(
   (params.tab as string) || "home"
 );
@@ -331,14 +330,23 @@ useEffect(() => {
 }, [params.tab]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [clubModal, setClubModal] = useState(false);
-  const [clubActive, setClubActive] = useState(false);
   const [viewMode, setViewMode] = useState("list");
   const [selectedStore, setSelectedStore] = useState<any>(null);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [previousTab, setPreviousTab] = useState("home");
   const [lastNotification, setLastNotification] = useState<any>(null);
   const [lastSeenNotificationId, setLastSeenNotificationId] = useState<string | null>(null);
-const { factura } = useApp();
+const {
+  orders,
+  notifications,
+  markAllRead,
+  completeOrder,
+  missOrder,
+  applyContestatie,
+  isClubActive,
+  setIsClubActive,
+  factura,
+} = useApp();
 const hasFactura = !!factura; // first time only
 const [contestText, setContestText] = useState("");
 const [contestOpen, setContestOpen] = useState<string | null>(null);
@@ -640,7 +648,13 @@ const historyOrders = orders.filter(
               </MapView>
             ) : (
               <>
-                <ClubCard onPress={() => clubActive ? setTab("club") : setClubModal(true)} />
+                
+<ClubCard
+  isActive={isClubActive}
+  onPress={() =>
+    isClubActive ? setTab("club") : setClubModal(true)
+  }
+/>
 
                 <Text style={{ color: "#94a3b8", marginBottom: 10 }}>
                   SPONSORIZAT
@@ -774,7 +788,7 @@ const historyOrders = orders.filter(
   </Pressable>
 </View>
 
-{/* ================= DONATE BUTTON ================= */}
+{/* donate */}
 <Pressable
   onPress={() =>
   setShowDonation(showDonation ? null : selectedProduct.id)
@@ -792,7 +806,7 @@ const historyOrders = orders.filter(
   </Text>
 </Pressable>
 
-{/* ================= EXPAND ================= */}
+{/*expantionnn */}
 {showDonation === selectedProduct.id && (
   <View
     style={{
@@ -827,7 +841,7 @@ const historyOrders = orders.filter(
 
   </>
 )}
-        {/* FAVORITES */}
+        {/* favs */}
         {tab === "favorites" && (
           <>
             <Text style={{ color: "white", fontSize: 22, fontWeight: "bold", marginBottom: 4 }}>
@@ -1306,11 +1320,13 @@ const historyOrders = orders.filter(
         ))}
       </View>
 
-      <Modal visible={clubModal} transparent animationType="slide">
+      <Modal visible={clubModal} key={isClubActive ? "active" : "inactive"} transparent animationType="slide">
   <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.5)" }}>
     <View style={{ backgroundColor: "#1e293b", padding: 20 }}>
       <Text style={{ color: "white", marginBottom: 10, fontSize: 16 }}>
-  FoodLink Club — 10 RON / lună
+  {isClubActive
+  ? "FoodLink Club activ ✅"
+  : "FoodLink Club — 10 RON / lună"}
 </Text>
 
 <Text style={{ color: "#94a3b8", marginBottom: 16 }}>
@@ -1321,11 +1337,17 @@ const historyOrders = orders.filter(
 
 <Pressable
   onPress={() => {
-    // simulate payment success
-    setClubActive(true);
-    setClubModal(false);
+  if (isClubActive) {
     setTab("club");
-  }}
+  } else {
+    router.push({
+      pathname: "/checkout",
+      params: { club: "true" },
+    });
+  }
+
+  setClubModal(false);
+}}
   style={{
     backgroundColor: "#22c55e",
     padding: 14,
@@ -1333,8 +1355,8 @@ const historyOrders = orders.filter(
   }}
 >
   <Text style={{ color: "white", textAlign: "center", fontWeight: "bold" }}>
-    Intră pentru 10 lei/lună →
-  </Text>
+  {isClubActive ? "Intră în club 🚀" : "Intră pentru 10 lei/lună →"}
+</Text>
 </Pressable>
 
       

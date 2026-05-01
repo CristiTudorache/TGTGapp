@@ -54,6 +54,8 @@ type Notification = {
 /*  CONTEXT TYPE  */
 
 type AppContextType = {
+  isClubActive: boolean;
+setIsClubActive: (v: boolean) => void;
     producerItems: any[];
 addProducerItem: (item: any) => void;
   ngoRequests: any[];
@@ -98,6 +100,7 @@ export const AppProvider = ({ children }: any) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [donations, setDonations] = useState<Donation[]>([]);
   const [points, setPoints] = useState(0);
+  const [isClubActive, setIsClubActive] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [ngoRequests, setNgoRequests] = useState<any[]>([]);
 const [producerItems, setProducerItems] = useState<any[]>([]);
@@ -133,7 +136,7 @@ const [producerItems, setProducerItems] = useState<any[]>([]);
     );
   };
 
-  /* ----- NOTIFICATIONS ----- */
+  /*  NOTIFICATIONS  */
 
   const addNotification = (n: Notification) => {
     setNotifications((prev) => [n, ...prev]);
@@ -368,6 +371,8 @@ setPoints((prev) => prev + refund);
   return (
     <AppContext.Provider
       value={{
+        isClubActive,
+        setIsClubActive,
         producerItems,
 addProducerItem: (item: any) => {
   const newItem = {

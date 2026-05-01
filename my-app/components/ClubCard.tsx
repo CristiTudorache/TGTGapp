@@ -1,6 +1,6 @@
 import { View, Text, Pressable } from "react-native";
 
-export default function ClubCard({ onPress }: any) {
+export default function ClubCard({ onPress, isActive }: any) {
   return (
     <Pressable
       onPress={onPress}
@@ -32,8 +32,8 @@ export default function ClubCard({ onPress }: any) {
           alignSelf: "flex-start",
         }}
       >
-        <Text style={{ color: "white" }}>
-          Intră pentru 10 lei/lună →
+        <Text style={{ color: "white", fontWeight: "bold" }}> 
+          {isActive ? "Intră în club ➜" : "Intră pentru 10 lei/lună ➜"}
         </Text>
       </View>
     </Pressable>

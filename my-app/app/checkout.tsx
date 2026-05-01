@@ -13,27 +13,28 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Checkout() {
   const router = useRouter();
-  const { item, donation } = useLocalSearchParams();
-
+  const { item, donation, club } = useLocalSearchParams();
+const isClub = club === "true";
   const parsedItem = item ? JSON.parse(item as string) : null;
   // addNotification
   const {
-    addOrder,
-    addCard,
-    addDonation,
-    cards,
-    addPoints,
-  } = useApp();
+  addOrder,
+  addCard,
+  addDonation,
+  cards,
+  addPoints,
+  setIsClubActive,
+} = useApp();
 
   const isDonation = donation === "true";
 
   const [step, setStep] = useState<"method" | "card">(
-    isDonation ? "card" : "method"
-  );
+  isDonation || isClub ? "card" : "method"
+);
 
   const [method, setMethod] = useState<"cash" | "card" | null>(
-    isDonation ? "card" : null
-  );
+  isDonation || isClub ? "card" : null
+);
 
   const [cardMode, setCardMode] = useState<"new" | "saved">("new");
 
@@ -47,11 +48,13 @@ export default function Checkout() {
 
   // ================= PAYMENT LOGIC =================
   const handlePay = (forcedMethod?: "cash" | "card") => {
-    if (!parsedItem) return;
+    if (!parsedItem && !isClub) return;
 
     // CARD VALIDATION
     // CARD VALIDATION ONLY IF CARD
-if (method === "card" || isDonation) {
+const finalMethod = forcedMethod || method;
+
+if (finalMethod === "card" || isDonation || isClub) {
   if (cardMode === "saved" && !selectedCardId) {
     alert("Selectează un card salvat");
     return;
@@ -87,9 +90,18 @@ if (method === "card" || isDonation) {
       router.replace("/main");
       return;
     }
+// ================= CLUB =================
+if (isClub) {
+  setIsClubActive(true);
 
+  router.replace({
+    pathname: "/main",
+    params: { tab: "club" },
+  });
+  return;
+}
     // ================= NORMAL ORDER =================
-    const finalMethod = forcedMethod || method;
+    
 
 addOrder({
   id: Date.now().toString(),
@@ -185,7 +197,7 @@ if (finalMethod === "card" && parsedItem.price){
         {/* CARD STEP */}
         {(step === "card" || isDonation) && (
           <>
-            {!isDonation && (
+            {!isDonation && !isClub && (
               <Pressable onPress={() => setStep("method")}>
                 <Text style={{ color: "#22c55e", marginBottom: 12 }}>
                   ← Înapoi
@@ -297,7 +309,7 @@ if (finalMethod === "card" && parsedItem.price){
             )}
 
             <Pressable
-              onPress={() => handlePay()}
+              onPress={() => handlePay("card")}
               style={{
                 backgroundColor: "#22c55e",
                 padding: 16,

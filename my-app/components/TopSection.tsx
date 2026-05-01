@@ -34,7 +34,7 @@ export default function TopSection() {
         marginBottom: 16,
       }}
     >
-      {/* DATE + TIME */}
+      {/* DATE and TIME */}
       <Text
         style={{
           color: "#94a3b8",

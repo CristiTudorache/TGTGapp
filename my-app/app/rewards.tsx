@@ -87,7 +87,7 @@ export default function Rewards() {
       date: Date.now(),
     });
 
-    // 🔔 NEW (only addition)
+    // 
     addNotification({
       id: Date.now().toString(),
       title: "Recompensă revendicată 🎁",

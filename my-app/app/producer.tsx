@@ -59,7 +59,7 @@ const [finance, setFinance] = useState<{
   products: {},
 });
 
-  /* ================= FORM ================= */
+  /*  FORM  */
 
   const [image, setImage] = useState<string | null>(null);
   const [title, setTitle] = useState("");
@@ -121,7 +121,7 @@ const [finance, setFinance] = useState<{
     minute: "2-digit",
   });
 
-  /* ================= IMAGE PICKER ================= */
+  /*  IMAGE pick  */
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -134,7 +134,7 @@ const [finance, setFinance] = useState<{
     }
   };
 
-  /* ================= CREATE ================= */
+  /*  CREATE  */
 
   const toggleAllergen = (a: string) => {
     setAllergens((prev) =>
@@ -506,7 +506,7 @@ return (
     marginTop: 10,
   }}
 >
-  {/* EDIT */}
+  {/* edit */}
   <Pressable
     onPress={() => startEditItem(item)}
     style={{
@@ -551,7 +551,7 @@ return (
           </>
         )}
 
-        {/* ================= CREATE ================= */}
+        {/*  CREATE  */}
         {tab === "create" && (
           <>
             <Pressable onPress={() => setTab("home")}>
@@ -589,7 +589,7 @@ return (
               )}
             </Pressable>
 
-            {/* TITLE */}
+            {/* title */}
             <Text style={label}>Titlu</Text>
             <TextInput
               value={title}
@@ -597,7 +597,7 @@ return (
               style={input}
             />
 
-            {/* DESC */}
+            {/* descr */}
             <Text style={label}>Descriere</Text>
             <TextInput
               value={desc}
@@ -606,7 +606,7 @@ return (
               multiline
             />
 
-            {/* TYPE */}
+            {/* type */}
             <Text style={label}>Tip</Text>
             <View style={{ flexDirection: "row", gap: 10 }}>
               {["Oferta", "Pachet", "Gratis"].map((t) => (
@@ -638,7 +638,7 @@ return (
   </>
 )}
 
-            {/* QTY */}
+            {/* quantity */}
             <Text style={label}>Cantitate</Text>
             <TextInput
               value={qty}
@@ -693,7 +693,7 @@ return (
             </Pressable>
           </>
         )}
-        {/* ================= BILLING ================= */}
+        {/*  BILLING  */}
 {tab === "billing" && (
   <>
     <Pressable onPress={() => setTab("profile")}>
@@ -827,7 +827,7 @@ return (
     ))}
   </>
 )}
-{/* =============== finante ===============*/}
+{/*  finante */}
 {tab === "finance" && (
   <>
     <Text style={{ color: "white", fontSize: 22, fontWeight: "bold" as const, marginBottom: 12 }}>
@@ -925,7 +925,7 @@ return (
     </View>
   </>
 )}
-        {/* ================= PROFILE ================= */}
+        {/*  PROFILE  */}
         
 {tab === "profile" && (
   <>
@@ -1034,7 +1034,7 @@ return (
       )}
     </View>
 
-    {/* FACTURI */}
+    {/* facturi */}
     <Pressable
       onPress={() => setTab("billing")}
       style={{
@@ -1080,7 +1080,7 @@ return (
 )}
       </ScrollView>
 
-      {/* NAV */}
+      {/* nav */}
       <View style={nav}>
         
         {[
@@ -1096,7 +1096,7 @@ return (
         {t.label}
       </Text>
 
-      {/* 🔴 requests dot */}
+      {/*  requests dot */}
       {t.key === "requests" &&
         requests.some((r) => r.status === "pending") && (
           <View
@@ -1112,7 +1112,7 @@ return (
           />
         )}
 
-      {/* 🔴 profile dot */}
+      {/* red profile dot */}
       {t.key === "profile" && !isBillingDone && (
         <View
           style={{
@@ -1137,7 +1137,7 @@ return (
   );
 }
 
-/* ================= STYLES ================= */
+/*  STYLES  */
 
 const input = {
   backgroundColor: "#1e293b",
